@@ -1,0 +1,7 @@
+name = Entity Reference View Widget
+description = Provides a complex widget that embeds a view for selecting items.
+core = 7.x
+dependencies[] = entityreference
+dependencies[] = entity
+
+files[] = entityreference_view_widget_plugin_exposed_form.inc
