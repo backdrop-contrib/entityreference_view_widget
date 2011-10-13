@@ -65,7 +65,7 @@ function entityreference_view_widget_views_api() {
 /**
  * Implements hook_views_plugins().
  */
-function entityreference_views_plugins() {
+function entityreference_view_widget_views_plugins() {
   $plugins = array(
     'exposed_form' => array(
       'entityreference_view_widget' => array(
