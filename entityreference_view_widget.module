@@ -329,8 +329,8 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   // Create the checkboxes that will replace the placeholders in entities
   // displayed through the view.
   $substitutions = array();
-  foreach ($view->result as $key => $result) {
-    $entity_id = reset($result);
+  $result_entities = $view->query->get_result_entities($view->result);
+  foreach ($result_entities[1] as $entity_id => $entity) {
     $element['add'][$entity_id] = array(
       '#type' => 'checkbox',
       '#refresh_items' => TRUE,
