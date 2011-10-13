@@ -295,7 +295,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   if (!empty($selected_entity_ids)) {
     $selected_entities = entity_load($entity_type, $selected_entity_ids);
     $entity_view = entity_view($entity_type, $selected_entities, 'entityreference_view_widget');
-    $entity_view = $entity_view[$entity_type];
+    $entity_view = reset($entity_view);
     foreach ($selected_entities as $entity_id => $entity) {
       // Remove the checkbox placeholder, it's not needed in this context.
       unset($entity_view[$entity_id]['entityreference_view_widget_action']);
