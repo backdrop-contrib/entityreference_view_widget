@@ -59,24 +59,8 @@ function entityreference_view_widget_theme() {
 function entityreference_view_widget_views_api() {
   return array(
     'api' => 3,
+    'path' => drupal_get_path('module', 'entityreference_view_widget') . '/views',
   );
-}
-
-/**
- * Implements hook_views_plugins().
- */
-function entityreference_view_widget_views_plugins() {
-  $plugins = array(
-    'exposed_form' => array(
-      'entityreference_view_widget' => array(
-        'title' => t('Entity Reference View Widget'),
-        'help' => t('Makes an exposed form work as a part of the Entityreference widget.'),
-        'handler' => 'entityreference_view_widget_plugin_exposed_form',
-        'uses options' => TRUE,
-      ),
-    ),
-  );
-  return $plugins;
 }
 
 /**
@@ -157,20 +141,19 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
   $target_base_table = $info['base table'];
 
   if ($widget['type'] == 'entityreference_view_widget') {
-    // Generate an option list from all user defined and module defined views.
+    // Get a list of all views that contain a "Entityreference View Widget" display.
     $options = array();
-    foreach (views_get_all_views() as $name => $view) {
-      if ($view->base_table == $target_base_table) {
-        foreach ($view->display as $display_name => $display) {
-          $options[check_plain($name)][$name .'|'. $display_name] = check_plain($display->display_title);
-        }
-      }
+    $displays = views_get_applicable_views('entityreference view display');
+    foreach ($displays as $data) {
+      list($view, $display_id) = $data;
+      $view_name = !empty($view->human_name) ? $view->human_name : $view->name;
+      $options[$view->name . '|' . $display_id] = check_plain($view_name);
     }
 
     $element['view'] = array(
       '#type' => 'select',
       '#title' => t('View'),
-      '#description' => t('Specify the View to use for selecting items.'),
+      '#description' => t('Specify the View to use for selecting items. Only views that have an "Entityreference View Widget" display are shown.'),
       '#options' => $options,
       '#default_value' => $settings['view'],
       '#required' => TRUE,

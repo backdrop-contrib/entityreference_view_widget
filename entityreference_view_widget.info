@@ -3,5 +3,7 @@ description = Provides a complex widget that embeds a view for selecting items.
 core = 7.x
 dependencies[] = entityreference
 dependencies[] = entity
+dependencies[] = views
 
-files[] = entityreference_view_widget_plugin_exposed_form.inc
+files[] = views/entityreference_view_widget_plugin_display.inc
+files[] = views/entityreference_view_widget_plugin_exposed_form.inc
