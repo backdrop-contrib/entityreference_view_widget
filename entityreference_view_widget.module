@@ -260,7 +260,6 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   // button (defined below).
   $element['pager_submit'] = array(
     '#type' => 'button',
-    '#name' => 'pager_submit',
     '#attributes' => array('class' => array('pager-submit')),
     '#ajax' => array(
       'path' => 'entityreference_view_widget/ajax/' . $field_name,

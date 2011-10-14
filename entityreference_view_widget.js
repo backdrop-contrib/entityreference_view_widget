@@ -14,7 +14,7 @@
         }
         var widget = $(this).closest('.entityreference-view-widget', context);
         $('.entityreference-view-widget-page', widget).val(page);
-        $('input[name="pager_submit"]', widget).trigger('mousedown');
+        $('.pager-submit', widget).trigger('mousedown');
 
         event.preventDefault();
       });
