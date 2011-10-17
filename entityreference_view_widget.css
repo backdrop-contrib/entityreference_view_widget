@@ -11,6 +11,26 @@
   overflow-y: auto;
 }
 
+/* The tabledrag table shouldn't have a border. */
+.entityreference-view-widget-left table {
+  border: 0;
+}
+
+.entityreference-view-widget-left .tabledrag-handle {
+  margin-top: 4px !important;
+}
+
+/*  Undo the table striping for draggable items in the sidebar.
+   "no_striping" is too bugy at the moment, with bugs such as #935066. */
+.entityreference-view-widget-left .even {
+  border: 0px;
+  background-color: white;
+}
+.entityreference-view-widget-left .odd {
+  border: 0px;
+  background-color: white;
+}
+
 .entityreference-view-widget-right {
   float: right;
   width: 80%;

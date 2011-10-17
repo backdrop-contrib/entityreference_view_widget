@@ -50,6 +50,9 @@ function entityreference_view_widget_theme() {
     'entityreference_view_widget' => array(
       'render element' => 'form',
     ),
+    'entityreference_view_widget_selected_items' => array(
+      'render element' => 'element',
+    ),
   );
 }
 
@@ -228,9 +231,9 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $output = $view->render();
 
   $element += array(
-    '#type' => 'fieldset',
     '#element_validate' => array('entityreference_view_widget_validate'),
     '#theme' => 'entityreference_view_widget',
+    '#theme_wrappers' => array('fieldset'),
     '#attributes' => array('class' => array('entityreference-view-widget')),
   );
   $element['#attached']['css'][] = drupal_get_path('module', 'entityreference_view_widget') . '/entityreference_view_widget.css';
@@ -278,10 +281,19 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     $selected_entities = entity_load($entity_type, $selected_entity_ids);
     $entity_view = entity_view($entity_type, $selected_entities, 'entityreference_view_widget');
     $entity_view = reset($entity_view);
+    $i = 0;
     foreach ($selected_entities as $entity_id => $entity) {
       // Remove the checkbox placeholder, it's not needed in this context.
       unset($entity_view[$entity_id]['entityreference_view_widget_action']);
 
+      $entity_view[$entity_id]['_weight'] = array(
+        '#parents' =>  array($field_name, $field_language, 'items', $entity_id, '_weight'),
+        '#type' => 'weight',
+        '#title' => t('Weight for @title', array('@title' => entity_label($entity_type, $entity))),
+        '#title_display' => 'invisible',
+        '#delta' => count($selected_entities),
+        '#default_value' => $i,
+      );
       $entity_view[$entity_id]['remove'] = array(
         '#parents' =>  array($field_name, $field_language, 'items', $entity_id, 'remove'),
         '#type' => 'checkbox',
@@ -298,8 +310,10 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
           ),
         ),
       );
+      $i++;
     }
     $element['selected_items'] = $entity_view;
+    $element['selected_items']['#theme'] = 'entityreference_view_widget_selected_items';
   }
   else {
     // Add empty text.
@@ -402,6 +416,55 @@ function theme_entityreference_view_widget($variables) {
 }
 
 /**
+ * Returns HTML for the selected entities (usually displaed in the left sidebar).
+ * By default it adds tabledrag functionality.
+ *
+ * @param $variables
+ *   An associative array containing:
+ *   - element: A render element representing the widgets.
+ *
+ * @ingroup themeable
+ */
+function theme_entityreference_view_widget_selected_items($variables) {
+  $element = $variables['element'];
+
+  // Special ID and classes for draggable tables.
+  $weight_class = $element['#id'] . '-weight';
+  $table_id = $element['#id'] . '-table';
+
+  // Get our list of widgets in order (needed when the form comes back after
+  // preview or failed validation).
+  $widgets = array();
+  foreach (element_children($element) as $key) {
+    $widgets[] = &$element[$key];
+  }
+  usort($widgets, '_field_sort_items_value_helper');
+
+  $rows = array();
+  foreach ($widgets as $key => &$widget) {
+    // Render the weight element.
+    $widget['_weight']['#attributes']['class'] = array($weight_class);
+    $weight = render($widget['_weight']);
+
+    // Render everything else (the renderable array returned by entity_view()).
+    $widget['#theme_wrappers'] = array();
+    $information = drupal_render($widget);
+
+    $rows[] = array(
+      'data' => array($information, $weight),
+      'class' => isset($widget['#attributes']['class']) ? array_merge($widget['#attributes']['class'], array('draggable')) : array('draggable'),
+      'no_striping' => TRUE,
+    );
+  }
+
+  drupal_add_tabledrag($table_id, 'order', 'sibling', $weight_class);
+
+  $output = empty($rows) ? '' : theme('table', array('header' => array(), 'rows' => $rows, 'attributes' => array('id' => $table_id)));
+  $output .= drupal_render_children($element);
+  return $output;
+}
+
+/**
  * Validation callback for the widget form.
  * Adjusts the internal ids taking into account the add / remove checkboxes.
  */
@@ -410,6 +473,9 @@ function entityreference_view_widget_validate($element, &$form_state) {
   $language = $element['#language'];
   $target_type = $form_state['field'][$field_name][$language]['field']['settings']['target_type'];
   $element_values = $form_state['values'][$field_name][$language];
+  // Sort selected elements by their weight.
+  uasort($element_values['items'], '_field_sort_items_helper');
+
   $value = array();
   // First add the existing elements, if they are not marked for deletion.
   if (!empty($element_values['items'])) {

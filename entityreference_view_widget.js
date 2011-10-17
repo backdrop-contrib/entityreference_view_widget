@@ -21,4 +21,26 @@
     }
   }
 
+  /**
+   * Custom tableDrag behavior for the widget.
+   */
+  Drupal.behaviors.entityreferenceViewWidgetDrag = {
+    attach: function (context, settings) {
+      // If tableDrag is not initialized, abort.
+      if (typeof Drupal.tableDrag == 'undefined') {
+        return;
+      }
+
+      // Hide the "Show row weights" link.
+      $('.entityreference-view-widget-left .tabledrag-toggle-weight').hide();
+
+      // Remove the message that gets added before the table after a row
+      // has been dragged. Unfortunatelly, this will remove the message
+      // for other tabledrag elements (such as filefield) on the page as well.
+      Drupal.theme.tableDragChangedWarning = function () {
+        return '';
+      };
+    }
+  };
+
 })(jQuery);
