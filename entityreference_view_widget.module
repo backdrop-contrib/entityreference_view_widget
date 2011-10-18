@@ -517,6 +517,7 @@ function entityreference_view_widget_prepare_filters($form, $field_name) {
   $form['#element_validate'] = array('entityreference_view_widget_exposed_filters_validate');
   $form['submit']['#submit'] = array('entityreference_view_widget_exposed_filters_submit');
   $form['submit']['#limit_validation_errors'] = array(array($field_name));
+  $form['submit']['#name'] = 'apply-' . $field_name;
 
   foreach (element_get_visible_children($form) as $key) {
     $form[$key]['#parents'] = array($field_name, 'exposed_filters', $key);
