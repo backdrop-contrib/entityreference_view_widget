@@ -190,10 +190,14 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     return;
   }
 
-  // #ajax has fired, form state now contains the freshest selected items.
-  if (!empty($form_state['values'])) {
-    $items = $form_state['values'][$field_name][$field_language];
+  // Load the items for form rebuilds from the field state as they might not be
+  // in $form_state['values'] because of validation limitations. Also, they are
+  // only passed in as $items when editing existing entities.
+  $field_state = field_form_get_state($element['#field_parents'], $field['field_name'], $langcode, $form_state);
+  if (isset($field_state['items'])) {
+    $items = $field_state['items'];
   }
+
   $selected_entity_ids = array();
   foreach ($items as $item) {
     $selected_entity_ids[] = $item['target_id'];
@@ -205,7 +209,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $view->set_display($target_view[1]);
   // If the widget has been rebuilt via #ajax, change the exposed filter and
   // pager values, if needed.
-  if (!empty($form_state['values'])) {
+  if (!empty($form_state['values'][$field_name][$field_language])) {
     $values = $form_state['values'][$field_name];
     // Set exposed_raw_input and exposed_data just like views_exposed_form_submit() does.
     if (!empty($values['exposed_filters'])) {
@@ -493,6 +497,12 @@ function entityreference_view_widget_validate($element, &$form_state) {
     }
   }
   form_set_value($element, $value, $form_state);
+
+  // Update items.
+  $parents = array_slice($element['#parents'], 0, -2);
+  $field_state = field_form_get_state($parents, $field_name, $language, $form_state);
+  $field_state['items'] = $value;
+  field_form_set_state($parents, $field_name, $language, $form_state, $field_state);
 }
 
 function entityreference_view_widget_exposed_filters_validate($element, &$form_state) {
