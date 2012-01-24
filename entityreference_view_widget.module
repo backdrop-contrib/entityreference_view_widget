@@ -82,9 +82,7 @@ function entityreference_view_widget_ajax() {
 
   $form_parents = func_get_args();
   // Retrieve the element to be rendered.
-  foreach ($form_parents as $parent) {
-    $form = $form[$parent];
-  }
+  $form = drupal_array_get_nested_value($form, $form_parents);
 
   $output = drupal_render($form);
   $js = drupal_add_js();
@@ -209,7 +207,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $view->set_display($target_view[1]);
   // If the widget has been rebuilt via #ajax, change the exposed filter and
   // pager values, if needed.
-  if (!empty($form_state['values'][$field_name][$field_language])) {
+  if (isset($form_state['values'][$field_name][$field_language])) {
     $values = $form_state['values'][$field_name];
     // Set exposed_raw_input and exposed_data just like views_exposed_form_submit() does.
     if (!empty($values['exposed_filters'])) {
