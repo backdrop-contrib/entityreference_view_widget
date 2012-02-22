@@ -265,6 +265,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   // button (defined below).
   $element['pager_submit'] = array(
     '#type' => 'button',
+    '#name' => 'pager_submit',
     '#attributes' => array('class' => array('pager-submit')),
     '#ajax' => array(
       'path' => 'entityreference_view_widget/ajax/' . $field_name,
@@ -276,6 +277,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
       ),
     ),
     '#weight' => 100,
+    '#submit' => array('entityreference_view_widget_exposed_filters_pager_submit'),
   );
 
   // Add a list of selected items (each item is a full rendered entity).
@@ -543,5 +545,14 @@ function entityreference_view_widget_prepare_filters($form, $field_name) {
  * Rerenders the form so that it works even if JS is disabled.
  */
 function entityreference_view_widget_exposed_filters_submit($form, &$form_state) {
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Submit handler added to the pager submit hidden button of the exposed filters
+ * form.
+ * Rerenders the form so that it works even if JS is disabled.
+ */
+function entityreference_view_widget_exposed_filters_pager_submit($form, &$form_state) {
   $form_state['rebuild'] = TRUE;
 }
