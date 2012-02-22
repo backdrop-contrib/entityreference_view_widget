@@ -532,7 +532,7 @@ function entityreference_view_widget_prepare_filters($form, $field_name) {
   foreach (element_get_visible_children($form) as $key) {
     $form[$key]['#parents'] = array($field_name, 'exposed_filters', $key);
     $form[$key]['#exposed_filter'] = TRUE;
-    if (!empty($form[$key]['#ajax'])) {
+    if (!empty($form[$key]['#ajax']) && empty($form[$key]['#ajax']['path']) && empty($form[$key]['#ajax']['callback'])) {
       $form[$key]['#ajax']['path'] = 'entityreference_view_widget/ajax/' . $field_name;
       $form[$key]['#ajax']['wrapper'] = 'edit-' . str_replace('_', '-', $field_name);
     }
