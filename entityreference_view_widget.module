@@ -490,10 +490,12 @@ function entityreference_view_widget_validate($element, &$form_state) {
     }
   }
   // Then new items (marked for addition).
-  $add = array_filter($element_values['add']);
-  foreach ($add as $entity_id => $status) {
-    if (!isset($element_values['items'][$entity_id])) {
-      $value[] = array('target_type' => $target_type, 'target_id' => $entity_id);
+  if (!empty($element_values['add'])) {
+    $add = array_filter($element_values['add']);
+    foreach ($add as $entity_id => $status) {
+      if (!isset($element_values['items'][$entity_id])) {
+        $value[] = array('target_type' => $target_type, 'target_id' => $entity_id);
+      }
     }
   }
   form_set_value($element, $value, $form_state);
