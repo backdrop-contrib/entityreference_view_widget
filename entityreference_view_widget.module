@@ -210,13 +210,18 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $view->set_display($target_view[1]);
   // If the widget has been rebuilt via #ajax, change the exposed filter and
   // pager values, if needed.
-  if (isset($form_state['values'][$field_name][$field_language])) {
+  $ajax = isset($form_state['values'][$field_name][$field_language]);
+  if ($ajax) {
     $values = $form_state['values'][$field_name];
     // Set exposed_raw_input and exposed_data just like views_exposed_form_submit() does.
     if (!empty($values['exposed_filters'])) {
       $exposed_input = $values['exposed_filters'];
       $view->exposed_raw_input = $exposed_input;
       $view->exposed_data = $exposed_input;
+      // Also set exposed_input, to prevent get_exposed_input() from using the
+      // previous outdated values
+      unset($exposed_input['submit']);
+      $view->exposed_input = $exposed_input;
     }
 
     // Only change the page if the rebuild wasn't triggered by an exposed filter,
@@ -233,7 +238,9 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   }
   $view->build();
   $view->execute($target_view[1]);
-  $output = $view->render();
+  // Display errors here if there is no full page build.
+  $output = $ajax ? theme('status_messages') : '';
+  $output .= $view->render();
 
   $element += array(
     '#element_validate' => array('entityreference_view_widget_validate'),

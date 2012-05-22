@@ -44,6 +44,11 @@ class entityreference_view_widget_plugin_exposed_form extends views_plugin_expos
     );
     foreach (element_get_visible_children($form) as $key) {
       $return_form[$key] = $form[$key];
+      // Adjust the element's values to the exposed input used for filtering
+      // the view. Set #default_value since we do not return $form_state.
+      if (isset($form_state['input'][$key]) && isset($return_form[$key]['#default_value'])) {
+        $return_form[$key]['#default_value'] = $form_state['input'][$key];
+      }
     }
     return $return_form;
   }
