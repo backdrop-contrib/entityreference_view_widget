@@ -25,8 +25,10 @@ class entityreference_view_widget_plugin_exposed_form extends views_plugin_expos
       'exposed_form_plugin' => $this,
     );
 
-    // For some insane reason, the view won't display any results
-    // without the drupal_build_form() call.
+    // We must build and validate the form. One reason is that some filter
+    // handlers (like views_handler_filter_term_node_tid) store internal values
+    // at exposed_validate() - so, query results will be incorrect unless
+    // views_exposed_form_validate() is run.
     $form = drupal_build_form('views_exposed_form', $form_state);
     // Seed the defaults so that the view renders on first page load.
     if (empty($this->view->exposed_data)) {
@@ -82,9 +84,8 @@ class entityreference_view_widget_plugin_exposed_form extends views_plugin_expos
     // The button basically doesn't work with JS on or off, without this.
     $form['submit']['#name'] = 'apply';
 
-    // Don't run the default validate / submit handlers, since all that
-    // is handled by the widget.
-    $form['#validate'] = array();
+    // Don't run the default submit handlers, since all that is handled
+    // by the widget. (Do run validate handler; see above.)
     $form['#submit'] = array();
   }
 }
