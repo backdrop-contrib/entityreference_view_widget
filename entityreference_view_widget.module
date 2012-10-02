@@ -151,7 +151,7 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
     foreach ($displays as $data) {
       list($view, $display_id) = $data;
       $view_name = !empty($view->human_name) ? $view->human_name : $view->name;
-      $options[$view->name . '|' . $display_id] = check_plain($view_name);
+      $options[$view->name . '|' . $display_id] = check_plain($view_name . ' | ' . $view->display_handler->display->display_title);
     }
 
     $element['view'] = array(
