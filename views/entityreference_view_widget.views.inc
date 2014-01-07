@@ -18,7 +18,7 @@ function entityreference_view_widget_views_plugins() {
         'title' => t('Entity Reference View Widget'),
         'help' => t('Selects referenceable entities for an entity reference view widget.'),
         'handler' => 'entityreference_view_widget_plugin_display',
-        'use ajax' => FALSE,
+        'use ajax' => TRUE,
         'use pager' => TRUE,
         'use more' => FALSE,
         'accept attachments' => FALSE,
@@ -28,16 +28,6 @@ function entityreference_view_widget_views_plugins() {
         // Custom property, used with views_get_applicable_views() to retrieve
         // all views with a 'Entity Reference View' display.
         'entityreference view display' => TRUE,
-      ),
-    ),
-    'exposed_form' => array(
-      'entityreference_view_widget' => array(
-        'title' => t('Entity Reference View Widget'),
-        'help' => t('Makes an exposed form work as a part of the Entityreference widget.'),
-        'handler' => 'entityreference_view_widget_plugin_exposed_form',
-        'uses options' => TRUE,
-        // Make this plugin only available to tables that map to an entity type.
-        'base' => $entity_tables,
       ),
     ),
   );

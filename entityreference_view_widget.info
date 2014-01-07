@@ -3,8 +3,7 @@ description = Provides a complex widget that embeds a view for selecting items.
 core = 7.x
 package = Fields
 dependencies[] = entityreference
-dependencies[] = entity
 dependencies[] = views
 
+files[] = views/entityreference_view_widget_handler_field_checkbox.inc
 files[] = views/entityreference_view_widget_plugin_display.inc
-files[] = views/entityreference_view_widget_plugin_exposed_form.inc
