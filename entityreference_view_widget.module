@@ -242,41 +242,46 @@ function entityreference_view_widget_modal($mode, $name, $display, $field_name) 
   $view->use_ajax = TRUE;
   $view->display['default']->display_options['use_ajax'] = TRUE;
 
-  $html = empty($view) ? '<div class="messages error">' . t("The target view can't be loaded.") . '</div>' : $view->preview();
+  if (method_exists($view, 'preview')) {
+    $html = $view->preview();
 
-  $submit = array(
-    '#type' => 'container',
-    '#attributes' => array(
-      'id' => 'entityreference-view-widget-modal-submit',
-    ),
-    'button_add' => array(
-      '#type' => 'button',
-      '#value' => t('Add selected items'),
+    $submit = array(
+      '#type' => 'container',
       '#attributes' => array(
-        'class' => array('button'),
+        'id' => 'entityreference-view-widget-modal-submit',
       ),
-    ),
-    'button_add_close' => array(
-      '#type' => 'button',
-      '#value' => t('Add items and close window'),
-      '#attributes' => array(
-        'class' => array('button', 'modal-close'),
+      'button_add' => array(
+        '#type' => 'button',
+        '#value' => t('Add selected items'),
+        '#attributes' => array(
+          'class' => array('button'),
+        ),
       ),
-    ),
-    'select_all' => array(
-      '#markup' => l(t('Select all'), '', array('attributes' => array('id' => 'entityreference_view_widget_select_all'))),
-    ),
-    'field_name' => array(
-      '#type' => 'hidden',
-      '#name' => 'field_name',
-      '#value' => $field_name,
-      '#attributes' => array(
-        'id' => 'entityreference-view-widget-field-name',
+      'button_add_close' => array(
+        '#type' => 'button',
+        '#value' => t('Add items and close window'),
+        '#attributes' => array(
+          'class' => array('button', 'modal-close'),
+        ),
       ),
-    ),
-  );
+      'select_all' => array(
+        '#markup' => l(t('Select all'), '', array('attributes' => array('id' => 'entityreference_view_widget_select_all'))),
+      ),
+      'field_name' => array(
+        '#type' => 'hidden',
+        '#name' => 'field_name',
+        '#value' => $field_name,
+        '#attributes' => array(
+          'id' => 'entityreference-view-widget-field-name',
+        ),
+      ),
+    );
 
-  $html .= drupal_render($submit);
+    $html .= drupal_render($submit);
+  }
+  else {
+    $html = '<div class="messages error">' . t("The target view can't be loaded.") . '</div>';
+  }
 
   return ctools_modal_render($view->human_name, $html);
 }
