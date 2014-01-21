@@ -242,7 +242,7 @@ function entityreference_view_widget_modal($mode, $name, $display, $field_name) 
   $view->use_ajax = TRUE;
   $view->display['default']->display_options['use_ajax'] = TRUE;
 
-  $html = $view->preview();
+  $html = empty($view) ? '<div class="messages error">' . t("The target view can't be loaded.") . '</div>' : $view->preview();
 
   $submit = array(
     '#type' => 'container',
