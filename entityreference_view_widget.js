@@ -40,7 +40,7 @@ Drupal.behaviors.entityreferenceViewWidget = {
       }
       else {
         $.ajax({
-          url: '/?q=entityreference_view_widget/ajax',
+          url: Drupal.settings.basePath + '?q=entityreference_view_widget/ajax',
           type: 'POST',
           dataType: 'html',
           data: query_string,
