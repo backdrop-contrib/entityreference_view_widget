@@ -1,6 +1,13 @@
 (function($) {
 Drupal.behaviors.entityreferenceViewWidget = {
   attach: function(context, settings) {
+    $('.ervw-add-items').bind('click',
+      function() {
+        if (typeof Drupal.settings['views'] != 'undefined') {
+          Drupal.settings['views']['ajaxViews'] = null;
+        }
+      }
+    );
     var checkboxes = '#modal-content input[name="entity_ids[]"]';
     $('#entityreference_view_widget_select_all').unbind('click').text('Select all').data('unselect', 0).click(function(){
       if ($(this).data('unselect')) {

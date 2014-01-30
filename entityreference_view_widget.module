@@ -167,7 +167,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   );
 
   $element['add_more'] = array(
-    '#markup' => ctools_modal_text_button(t('Add items'), 'entityreference_view_widget/nojs/modal/' . $target_view[0] . '/' . $target_view[1] . '/' . $field['field_name'], '', 'button field-add-more-submit'),
+    '#markup' => ctools_modal_text_button(t('Add items'), 'entityreference_view_widget/nojs/modal/' . $target_view[0] . '/' . $target_view[1] . '/' . $field['field_name'], '', 'button field-add-more-submit ervw-add-items'),
     '#element_validate' => array('entityreference_view_widget_validate'),
     '#name' => $field['field_name'],
     '#field_label' => $instance['label'],
@@ -239,8 +239,9 @@ function entityreference_view_widget_modal($mode, $name, $display, $field_name) 
   ctools_include('ajax');
 
   $view = views_get_view($name);
+  $view->set_display($display);
   $view->use_ajax = TRUE;
-  $view->display['default']->display_options['use_ajax'] = TRUE;
+  $view->display[$display]->display_options['use_ajax'] = TRUE;
 
   if (method_exists($view, 'preview')) {
     $html = $view->preview();
