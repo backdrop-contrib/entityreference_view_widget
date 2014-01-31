@@ -48,7 +48,7 @@ Drupal.behaviors.entityreferenceViewWidget = {
             data && $('#' + widget_settings.table_id + ' tbody').html(data);
             $('#' + widget_settings.table_id + ' tbody tr').each(function(){
               var el = $(this);
-              if (!el.find('.tabledrag-handle').length) {
+              if (widget_settings.cardinality !== '1') {
                 Drupal.tableDrag[widget_settings.table_id].makeDraggable(el.get(0));
                 el.find('td:last').addClass('tabledrag-hide');
                 if ($.cookie('Drupal.tableDrag.showWeight') == 1) {
