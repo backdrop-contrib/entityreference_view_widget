@@ -227,6 +227,10 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
     $form_existing = drupal_array_get_nested_value($form, $element['#parents']);
     drupal_array_set_nested_value($form, $element['#parents'], array_merge($form_existing, $rows));
   }
+  else {
+    // This fix should be considered as a temporary solution (looks dirty for me). Issue #2177615.
+    $form_state['values'][$element['#name']][LANGUAGE_NONE] = array();
+  }
 
   if ($element['#settings']['required'] && empty($valid)) {
     form_set_error($element['#settings']['element'], t('@f field is required!', array('@f' => $element['#settings']['field_label'])));
