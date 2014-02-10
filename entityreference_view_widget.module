@@ -41,10 +41,10 @@ function entityreference_view_widget_views_data_alter(&$data) {
  * Implements hook_menu().
  */
 function entityreference_view_widget_menu() {
-  $items['entityreference_view_widget/%ctools_js/modal/%/%/%'] = array(
+  $items['entityreference_view_widget/%ctools_js/modal/%/%/%/%'] = array(
     'title' => 'Entity reference view widget modal',
     'page callback' => 'entityreference_view_widget_modal',
-    'page arguments' => array(1, 3, 4, 5),
+    'page arguments' => array(1, 3, 4, 5, 6),
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
@@ -153,7 +153,6 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   }
 
   $frontend_id = drupal_html_id($field['field_name']);
-  $target_view = explode('|', $instance['widget']['settings']['view']);
   $settings_selector = 'entityreference-view-widget-' . $frontend_id . '-settings';
   $form['#after_build'][] = 'entityreference_view_widget_add_resources';
 
@@ -176,8 +175,10 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     ),
   );
 
+  $add_more_text = ($field['cardinality'] == 1) ? 'Add item' : 'Add items';
+
   $element['add_more'] = array(
-    '#markup' => ctools_modal_text_button(t('Add items'), 'entityreference_view_widget/nojs/modal/' . $target_view[0] . '/' . $target_view[1] . '/' . $settings_selector, '', 'button field-add-more-submit ervw-add-items'),
+    '#markup' => ctools_modal_text_button(t($add_more_text), 'entityreference_view_widget/nojs/modal/' . $settings_selector . '/' . $instance['field_name'] . '/' . $instance['entity_type'] . '/' . $instance['bundle'], '', 'button field-add-more-submit ervw-add-items'),
     '#element_validate' => array('entityreference_view_widget_validate'),
     '#name' => $field['field_name'],
     '#attached' => array(
@@ -249,14 +250,18 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
  * @param string $settings_selector
  *   The dom selector of the settings element.
  */
-function entityreference_view_widget_modal($mode, $name, $display, $settings_selector) {
+function entityreference_view_widget_modal($mode, $settings_selector, $field_name, $entity_type, $bundle) {
   ctools_include('modal');
   ctools_include('ajax');
 
-  $view = views_get_view($name);
-  $view->set_display($display);
+  $field = field_info_field($field_name);
+  $instance = field_info_instance($entity_type, $field_name, $bundle);
+  $target_view = explode('|', $instance['widget']['settings']['view']);
+
+  $view = views_get_view($target_view[0]);
+  $view->set_display($target_view[1]);
   $view->use_ajax = TRUE;
-  $view->display[$display]->display_options['use_ajax'] = TRUE;
+  $view->display[$target_view[1]]->display_options['use_ajax'] = TRUE;
 
   if (method_exists($view, 'preview')) {
     $html = $view->preview();
@@ -280,9 +285,6 @@ function entityreference_view_widget_modal($mode, $name, $display, $settings_sel
           'class' => array('button', 'modal-close'),
         ),
       ),
-      'select_all' => array(
-        '#markup' => l(t('Select all'), '', array('attributes' => array('id' => 'entityreference-view-widget-select-all'))),
-      ),
       'settings_selector' => array(
         '#type' => 'hidden',
         '#value' => $settings_selector,
@@ -291,6 +293,12 @@ function entityreference_view_widget_modal($mode, $name, $display, $settings_sel
         ),
       ),
     );
+
+    if ($field['cardinality'] != 1) {
+      $submit['select_all'] = array(
+        '#markup' => l(t('Select all'), '', array('attributes' => array('id' => 'entityreference-view-widget-select-all'))),
+      );
+    }
 
     $html .= drupal_render($submit);
   }
