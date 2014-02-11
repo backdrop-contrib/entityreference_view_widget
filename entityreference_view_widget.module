@@ -129,6 +129,12 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
       '#description' => t('If enabled, the View will get all selected entity ids as the first argument. Useful for excluding already selected items.'),
       '#default_value' => isset($settings['pass_argument']) ? $settings['pass_argument'] : '',
     );
+    $element['close_modal'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Close modal window after submitting the items'),
+      '#description' => t('If enabled, the modal window will close after you had selected the entities from the view and submitted your selection.'),
+      '#default_value' => isset($settings['close_modal']) ? $settings['close_modal'] : '',
+    );
   }
 
   return $element;
@@ -151,7 +157,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     $first_parent = array_shift($parents);
     $parents_path = $first_parent . '[' . implode('][', $parents) . '][' . $field['field_name'] . ']';
   }
-
+dsm($instance);
   $frontend_id = drupal_html_id($field['field_name']);
   $settings_selector = 'entityreference-view-widget-' . $frontend_id . '-settings';
   $form['#after_build'][] = 'entityreference_view_widget_add_resources';
@@ -164,6 +170,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     'element' => $parents_path,
     'required' => $instance['required'],
     'field_label' => $instance['label'],
+    'close_modal' => $instance['widget']['settings']['close_modal'],
   );
 
   $form[$field['field_name'] . '_settings'] = array(
@@ -273,16 +280,9 @@ function entityreference_view_widget_modal($mode, $settings_selector, $field_nam
       ),
       'button_add' => array(
         '#type' => 'button',
-        '#value' => t('Add selected items'),
+        '#value' => t('Submit'),
         '#attributes' => array(
           'class' => array('button'),
-        ),
-      ),
-      'button_add_close' => array(
-        '#type' => 'button',
-        '#value' => t('Add items and close window'),
-        '#attributes' => array(
-          'class' => array('button', 'modal-close'),
         ),
       ),
       'settings_selector' => array(

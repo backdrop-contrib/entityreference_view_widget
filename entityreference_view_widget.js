@@ -26,7 +26,6 @@ Drupal.behaviors.entityreferenceViewWidget = {
       var selected_amount = $(checkboxes + ':checked').length;
       var settings_selector = '#' + $('#entityreference-view-widget-settings-selector').val();
       var widget_settings = JSON.parse($(settings_selector).val());
-      var offset = $('#' + widget_settings.table_id + ' tbody tr').length;
       var entity_ids = $(checkboxes).serialize();
       var query_string = entity_ids + '&element=' + widget_settings.element + '&langcode=' + widget_settings.langcode + '&target_type=' + widget_settings.target_type + '&cardinality=' + widget_settings.cardinality;
 
@@ -36,7 +35,7 @@ Drupal.behaviors.entityreferenceViewWidget = {
       });
 
       if (widget_settings.cardinality > 0 && widget_settings.cardinality < selected_amount) {
-        $('#modal-content').prepend('<div class="messages error">Please select no more than ' + widget_settings.cardinality + ' values.</div>')
+        $('#modal-content').prepend('<div class="messages error">Please select no more than ' + widget_settings.cardinality + ' values.</div>');
       }
       else {
         $.ajax({
@@ -59,7 +58,7 @@ Drupal.behaviors.entityreferenceViewWidget = {
                 }
               }
             });
-            button.hasClass('modal-close') && Drupal.CTools.Modal.dismiss();
+            widget_settings.close_modal && Drupal.CTools.Modal.dismiss();
           }
         });
       }
