@@ -157,7 +157,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     $first_parent = array_shift($parents);
     $parents_path = $first_parent . '[' . implode('][', $parents) . '][' . $field['field_name'] . ']';
   }
-dsm($instance);
+
   $frontend_id = drupal_html_id($field['field_name']);
   $settings_selector = 'entityreference-view-widget-' . $frontend_id . '-settings';
   $form['#after_build'][] = 'entityreference_view_widget_add_resources';
