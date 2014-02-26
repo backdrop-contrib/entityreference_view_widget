@@ -267,8 +267,7 @@ function entityreference_view_widget_modal($mode, $settings_selector, $field_nam
 
   $view = views_get_view($target_view[0]);
   $view->set_display($target_view[1]);
-  $view->use_ajax = TRUE;
-  $view->display[$target_view[1]]->display_options['use_ajax'] = TRUE;
+  $view->display_handler->set_option('use_ajax', TRUE);
 
   if (method_exists($view, 'preview')) {
     $html = $view->preview();
