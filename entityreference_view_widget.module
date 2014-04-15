@@ -58,6 +58,15 @@ function entityreference_view_widget_menu() {
 }
 
 /**
+ * Implements hook_admin_paths().
+ */
+function entityreference_view_widget_admin_paths() {
+  return array(
+    'entityreference_view_widget/*' => TRUE,
+  );
+}
+
+/**
  * Implements hook_theme().
  */
 function entityreference_view_widget_theme() {
