@@ -22,12 +22,11 @@ Drupal.behaviors.entityreferenceViewWidget = {
     });
     $('#entityreference-view-widget-modal-submit .button').click(function(){
       $('#modal-content .error').remove();
-      var button = $(this);
       var selected_amount = $(checkboxes + ':checked').length;
       var settings_selector = '#' + $('#entityreference-view-widget-settings-selector').val();
       var widget_settings = JSON.parse($(settings_selector).val());
       var entity_ids = $(checkboxes).serialize();
-      var query_string = entity_ids + '&element=' + widget_settings.element + '&langcode=' + widget_settings.langcode + '&target_type=' + widget_settings.target_type + '&cardinality=' + widget_settings.cardinality;
+      var query_string = entity_ids + '&widget_settings=' + $(settings_selector).val();
 
       $('#' + widget_settings.table_id + ' input[type=checkbox]:checked').each(function(){
         query_string += '&default_entity_ids[' + $(this).data('delta') + ']=' + $(this).val();
