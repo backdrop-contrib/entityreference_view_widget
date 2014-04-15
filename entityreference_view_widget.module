@@ -155,7 +155,11 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   if (!empty($form['#parents'])) {
     $parents = $form['#parents'];
     $first_parent = array_shift($parents);
-    $parents_path = $first_parent . '[' . implode('][', $parents) . '][' . $field['field_name'] . ']';
+    $parents_path = $first_parent;
+    if (!empty($parents)) {
+      $parents_path .= '[' . implode('][', $parents) . ']';
+    }
+    $parents_path .= '[' . $field['field_name'] . ']';
   }
 
   $frontend_id = drupal_html_id($field['field_name']);
