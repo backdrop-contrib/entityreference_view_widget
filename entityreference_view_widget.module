@@ -148,10 +148,12 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     'element' => $parents_path,
     'required' => $instance['required'],
     'field_label' => $instance['label'],
-    'close_modal' => $instance['widget']['settings']['close_modal'],
     'instance' => $instance,
     'field' => $field,
   );
+  if (isset($instance['widget']['settings']['close_modal'])) {
+    $settings['close_modal'] = $instance['widget']['settings']['close_modal'];
+  }
 
   $add_more_text = ($field['cardinality'] == 1) ? t('Add item') : t('Add items');
   $element['add_more'] = array(
