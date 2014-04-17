@@ -12,13 +12,13 @@
         }
       );
       $('.entityreference-view-widget-modal-submit').each(function() {
-        var selected_ids = [];
+        var selected_ids = '';
         var selector = '#' + $(this).data('table-id') + ' input[type=checkbox]:checked';
         $(selector).each(function(i) {
-          selected_ids[i] = $(this).val();
+          selected_ids += $(this).val() + ';';
         });
-        if (selected_ids) {
-          $(this).attr('data-selected-ids', selected_ids.join(';'));
+        if (selected_ids.length > 0) {
+          $(this).attr('data-selected-ids', selected_ids.substring(0, selected_ids.length - 1));
         }
       });
       var checkboxes = '#modal-content input[name="entity_ids[]"]';
@@ -46,7 +46,7 @@
           $(checkboxes + ':checked').each(function(i) {
               var el = $(this);
               $('#ervw-modal-form-entity-ids').val(function(index, value) {
-                  return value + ';' + el.val();
+                  return value ? value + ';' + el.val() : el.val();
                 }
               )
             }
