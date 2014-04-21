@@ -4,7 +4,7 @@
       // The following code is a workaround to make the eventual exposed filters
       // work on the embedded view displayed in the modal, probably remove once
       // http://drupal.org/node/1809958 has been merged.
-      $('.ervw-add-items').bind('click',
+      $('.ervw-add-items').bind('mousedown',
         function() {
           if (typeof Drupal.settings['views'] != 'undefined') {
             Drupal.settings['views']['ajaxViews'] = null;
