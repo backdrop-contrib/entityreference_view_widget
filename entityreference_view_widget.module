@@ -162,6 +162,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
       'class' => array('ervw-add-items'),
     ),
     '#type' => 'button',
+    '#name' => str_replace('-', '_', drupal_html_id('add-more')),
   );
 
   $entity_ids = array();
@@ -185,8 +186,8 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     if (!empty($view)) {
       // If the pass argument setting has been checked, pass a list of entity
       // ids to the view.
-      if (!empty($settings['pass_argument']) && !empty($form_state['selected_entity_ids'])) {
-        $view->set_arguments(array(implode('+', $form_state['selected_entity_ids'])));
+      if (!empty($settings['pass_argument']) && !empty($form_state['selected_entity_ids_' . $settings['field']['id']])) {
+        $view->set_arguments(array(implode('+', $form_state['selected_entity_ids_' . $settings['field']['id']])));
       }
       $view->set_display($target_view[1]);
       $view->display_handler->set_option('use_ajax', TRUE);
@@ -201,7 +202,6 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       // Prepare an array containing information used by the form displayed in
       // the modal.
       $context = array(
-        'field' => $settings['field'],
         'settings' => $settings,
         'view_markup' => $view_markup,
         'view' => $view,
@@ -264,7 +264,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
         $valid = TRUE;
       }
     }
-    $form_state['selected_entity_ids'] = $entity_ids;
+    $form_state['selected_entity_ids_' . $settings['field']['id']] = $entity_ids;
     $rows = entityreference_view_widget_rows($entity_ids, $settings);
     // Put back the rows in the form.
     $form_existing = drupal_array_get_nested_value($form, $element['#parents']);
@@ -278,7 +278,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
 }
 
 /**
- * Form constructor for the submit buttons displayed at the bottom of the modal.
+ * Form constructor for the modal form.
  */
 function entityreference_view_widget_modal_form($form, &$form_state, $context) {
   $form_state['ervw-settings'] = $context['settings'];
@@ -311,7 +311,7 @@ function entityreference_view_widget_modal_form($form, &$form_state, $context) {
         ),
       ),
     );
-    if ($context['field']['cardinality'] != 1) {
+    if ($context['settings']['field']['cardinality'] != 1) {
       $form['submit']['select_all'] = array(
         '#markup' => l(t('Select all'), '', array('attributes' => array('id' => 'entityreference-view-widget-select-all'))),
       );
@@ -336,16 +336,16 @@ function entityreference_view_widget_command_draggable($selector) {
 function entityreference_view_widget_ajax($form, $form_state) {
   $commands = array();
   if (!empty($form_state['input']['entity_ids'])) {
-    $selected_entity_ids = !empty($form_state['values']['selected_entity_ids']) ? explode(';', check_plain($form_state['input']['selected_entity_ids'])) : array();
     // Retrieve the settings array stored in the form_state.
     $widget_settings = $form_state['ervw-settings'];
+    $selected_entity_ids = !empty($form_state['values']['selected_entity_ids']) ? explode(';', $form_state['values']['selected_entity_ids']) : array();
     $input_ids = array_merge($selected_entity_ids, $form_state['input']['entity_ids']);
     $entity_ids = array_unique($input_ids);
     $selected_amount = count($entity_ids);
 
     // If the user selected too many items...
-    if ($widget_settings['cardinality'] > 0 && $widget_settings['cardinality'] < $selected_amount) {
-      $error_message = t('Please select no more than @cardinality values', array('@cardinality' => $widget_settings['cardinality']));
+    if ($widget_settings['field']['cardinality'] > 0 && $widget_settings['field']['cardinality'] < $selected_amount) {
+      $error_message = t('Please select no more than @cardinality values', array('@cardinality' => $widget_settings['field']['cardinality']));
       $commands[] = ajax_command_prepend('#modal-content', '<div class="messages error">' . $error_message  . '</div>');
     }
     else {
@@ -355,7 +355,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
       // Replace the whole table with updated values.
       $commands[] = ajax_command_replace('#' . $widget_settings['table_id'] . ' tbody', '<tbody>' . render($rows) . '</tbody>');
       // Make the table rows draggables.
-      $commands[] = entityreference_view_widget_command_draggable($widget_settings['table_id'], $widget_settings['cardinality']);
+      $commands[] = entityreference_view_widget_command_draggable($widget_settings['table_id'], $widget_settings['field']['cardinality']);
       // Automatically close the modal if necessary.
       if (!empty($widget_settings['close_modal'])) {
         ctools_include('modal');

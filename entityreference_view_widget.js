@@ -25,12 +25,10 @@
       $('#entityreference-view-widget-select-all').unbind('click').text(Drupal.t('Select all')).data('unselect', 0).click(function() {
         if ($(this).data('unselect')) {
           $(checkboxes).removeAttr('checked');
-          $(checkboxes).trigger('change');
           $(this).data('unselect', 0).text(Drupal.t('Select all'));
         }
         else {
           $(checkboxes).attr('checked', 'checked');
-          $(checkboxes).trigger('change');
           $(this).data('unselect', 1).text(Drupal.t('Unselect all'));
         }
         return false;
