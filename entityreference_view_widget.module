@@ -145,6 +145,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     'element' => $parents_path,
     'instance' => $instance,
     'field' => $field,
+    'selected_ids_key' => str_replace('-', '_', drupal_html_id('selected_ids')),
   );
   // Append the widget settings to the array.
   $settings += $instance['widget']['settings'];
@@ -186,8 +187,8 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     if (!empty($view)) {
       // If the pass argument setting has been checked, pass a list of entity
       // ids to the view.
-      if (!empty($settings['pass_argument']) && !empty($form_state['selected_entity_ids_' . $settings['field']['id']])) {
-        $view->set_arguments(array(implode('+', $form_state['selected_entity_ids_' . $settings['field']['id']])));
+      if (!empty($settings['pass_argument']) && !empty($form_state[$settings['selected_ids_key']])) {
+        $view->set_arguments(array(implode('+', $form_state[$settings['selected_ids_key']])));
       }
       $view->set_display($target_view[1]);
       $view->display_handler->set_option('use_ajax', TRUE);
@@ -264,7 +265,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
         $valid = TRUE;
       }
     }
-    $form_state['selected_entity_ids_' . $settings['field']['id']] = $entity_ids;
+    $form_state[$settings['selected_ids_key']] = $entity_ids;
     $rows = entityreference_view_widget_rows($entity_ids, $settings);
     // Put back the rows in the form.
     $form_existing = drupal_array_get_nested_value($form, $element['#parents']);
