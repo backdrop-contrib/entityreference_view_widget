@@ -190,21 +190,22 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     $view = views_get_view($target_view[0]);
     if (!empty($view)) {
       array_pop($form_state['triggering_element']['#parents']);
-      $input_ids = drupal_array_get_nested_value($form_state['input'], $form_state['triggering_element']['#parents']);
-      $selected_ids = array();
-      if (!empty($input_ids)) {
-        foreach ($input_ids as $item) {
-          $selected_ids[] = $item['target_id'];
-        }
-      }
       $view->set_display($target_view[1]);
       $view->display_handler->set_option('use_ajax', TRUE);
+      $view_markup = $view->preview();
+      $html = '';
 
-      $html = $view->preview();
+      // In case there's exposed widgets, put them at the top of the modal.
+      if (!empty($view->exposed_widgets)) {
+        $html .= '<div class="view-filters">' . $view->exposed_widgets . '</div>';
+      }
+
+      // Prepare an array containing information used by the form displayed in
+      // the modal.
       $context = array(
-        'selected_ids' => $selected_ids,
         'field' => $settings['field'],
         'settings' => $settings,
+        'view_markup' => $view_markup,
       );
       $output = drupal_get_form('entityreference_view_widget_modal_form', $context);
       $html .= drupal_render($output);
@@ -220,6 +221,19 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     '#type' => 'ajax',
     '#commands' => $commands,
   );
+}
+
+/**
+ * Implements hook_preprocess_views_view().
+ *
+ * In case the view is using our custom display plugin, remove the exposed
+ * filters from the output, we're already outputting that on top of the modal
+ * content.
+ */
+function entityreference_view_widget_preprocess_views_view(&$vars) {
+  if ($vars['view']->display_handler instanceof entityreference_view_widget_plugin_display) {
+    $vars['exposed'] = '';
+  }
 }
 
 /**
@@ -268,17 +282,20 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
 function entityreference_view_widget_modal_form($form, &$form_state, $context) {
   $form_state['ervw-settings'] = $context['settings'];
   $form_state['selected_ids'] = $context['selected_ids'];
+  $form['view-markup'] = array(
+    '#markup' => $context['view_markup'],
+  );
+  $form['selected_entity_ids'] = array(
+    '#type' => 'hidden',
+    '#attributes' => array(
+      'id' => 'ervw-modal-form-selected-entity-ids',
+    ),
+  );
   $form['submit'] = array(
     '#type' => 'container',
     '#attributes' => array(
       'class' => array('entityreference-view-widget-modal-submit'),
       'data-table-id' => $context['settings']['table_id'],
-    ),
-    'entity_ids' => array(
-      '#type' => 'hidden',
-      '#attributes' => array(
-        'id' => 'ervw-modal-form-entity-ids',
-      ),
     ),
     '#value' => '',
     'button_add' => array(
@@ -316,9 +333,10 @@ function entityreference_view_widget_command_draggable($selector) {
 function entityreference_view_widget_ajax($form, $form_state) {
   $commands = array();
   if (!empty($form_state['input']['entity_ids'])) {
-    $input_ids = explode(';', check_plain($form_state['input']['entity_ids']));
+    $selected_entity_ids = !empty($form_state['values']['selected_entity_ids']) ? explode(';', check_plain($form_state['input']['selected_entity_ids'])) : array();
     // Retrieve the settings array stored in the form_state.
     $widget_settings = $form_state['ervw-settings'];
+    $input_ids = array_merge($selected_entity_ids, $form_state['input']['entity_ids']);
     $entity_ids = array_unique($input_ids);
     $selected_amount = count($entity_ids);
 

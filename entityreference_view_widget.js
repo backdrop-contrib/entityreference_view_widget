@@ -18,41 +18,23 @@
           selected_ids += $(this).val() + ';';
         });
         if (selected_ids.length > 0) {
-          $(this).attr('data-selected-ids', selected_ids.substring(0, selected_ids.length - 1));
+          $('#ervw-modal-form-selected-entity-ids').val(selected_ids.substring(0, selected_ids.length - 1));
         }
       });
       var checkboxes = '#modal-content input[name="entity_ids[]"]';
-      $('#entityreference-view-widget-select-all').unbind('click').text('Select all').data('unselect', 0).click(function() {
+      $('#entityreference-view-widget-select-all').unbind('click').text(Drupal.t('Select all')).data('unselect', 0).click(function() {
         if ($(this).data('unselect')) {
           $(checkboxes).removeAttr('checked');
           $(checkboxes).trigger('change');
-          $(this).data('unselect', 0).text('Select all');
+          $(this).data('unselect', 0).text(Drupal.t('Select all'));
         }
         else {
           $(checkboxes).attr('checked', 'checked');
           $(checkboxes).trigger('change');
-          $(this).data('unselect', 1).text('Unselect all');
+          $(this).data('unselect', 1).text(Drupal.t('Unselect all'));
         }
         return false;
       });
-      // Maintain an entity_ids hidden field on the form that is displayed at the
-      // bottom of the modal, this is used by the ajax callback to append the
-      // selected values.
-      var entity_ids_selector = '#ervw-modal-form-entity-ids';
-      $(checkboxes).bind('change', function() {
-          if ($(entity_ids_selector).parent().attr('data-selected-ids')) {
-            $(entity_ids_selector).val($(entity_ids_selector).parent().data('selected-ids'));
-          }
-          $(checkboxes + ':checked').each(function(i) {
-              var el = $(this);
-              $('#ervw-modal-form-entity-ids').val(function(index, value) {
-                  return value ? value + ';' + el.val() : el.val();
-                }
-              )
-            }
-          );
-        }
-      );
     }
   }
 
