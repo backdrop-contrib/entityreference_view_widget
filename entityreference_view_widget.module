@@ -138,6 +138,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   }
   $frontend_id = drupal_html_id($field['field_name']);
 
+  $index = _entityreference_view_widget_get_index();
   $settings = array(
     'langcode' => $langcode,
     'table_id' => $frontend_id . '-values',
@@ -145,7 +146,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
     'element' => $parents_path,
     'instance' => $instance,
     'field' => $field,
-    'selected_ids_key' => str_replace('-', '_', drupal_html_id('selected_ids')),
+    'index' => $index,
   );
   // Append the widget settings to the array.
   $settings += $instance['widget']['settings'];
@@ -163,7 +164,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
       'class' => array('ervw-add-items'),
     ),
     '#type' => 'button',
-    '#name' => str_replace('-', '_', drupal_html_id('add-more')),
+    '#name' => 'add_more_' . $index,
   );
 
   $entity_ids = array();
@@ -173,6 +174,15 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $element += entityreference_view_widget_rows($entity_ids, $settings);
 
   return $element;
+}
+
+/**
+ * Dumb helper function used to return a different number for each element.
+ */
+function _entityreference_view_widget_get_index() {
+  $index = & drupal_static(__FUNCTION__, 0);
+  $index++;
+  return $index;
 }
 
 /**
@@ -187,8 +197,8 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     if (!empty($view)) {
       // If the pass argument setting has been checked, pass a list of entity
       // ids to the view.
-      if (!empty($settings['pass_argument']) && !empty($form_state[$settings['selected_ids_key']])) {
-        $view->set_arguments(array(implode('+', $form_state[$settings['selected_ids_key']])));
+      if (!empty($settings['pass_argument']) && !empty($form_state['ervw_ids'][$settings['index']])) {
+        $view->set_arguments(array(implode('+', $form_state['ervw_ids'][$settings['index']])));
       }
       $view->set_display($target_view[1]);
       $view->display_handler->set_option('use_ajax', TRUE);
@@ -265,7 +275,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
         $valid = TRUE;
       }
     }
-    $form_state[$settings['selected_ids_key']] = $entity_ids;
+    $form_state['ervw_ids'][$settings['index']] = $entity_ids;
     $rows = entityreference_view_widget_rows($entity_ids, $settings);
     // Put back the rows in the form.
     $form_existing = drupal_array_get_nested_value($form, $element['#parents']);
@@ -282,7 +292,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
  * Form constructor for the modal form.
  */
 function entityreference_view_widget_modal_form($form, &$form_state, $context) {
-  $form_state['ervw-settings'] = $context['settings'];
+  $form_state['ervw_settings'] = $context['settings'];
   $form['view-markup'] = array(
     '#markup' => $context['view_markup'],
   );
@@ -338,7 +348,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
   $commands = array();
   if (!empty($form_state['input']['entity_ids'])) {
     // Retrieve the settings array stored in the form_state.
-    $widget_settings = $form_state['ervw-settings'];
+    $widget_settings = $form_state['ervw_settings'];
     $selected_entity_ids = !empty($form_state['values']['selected_entity_ids']) ? explode(';', $form_state['values']['selected_entity_ids']) : array();
     $input_ids = array_merge($selected_entity_ids, $form_state['input']['entity_ids']);
     $entity_ids = array_unique($input_ids);
