@@ -219,7 +219,9 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       );
       $output = drupal_get_form('entityreference_view_widget_modal_form', $context);
       $html .= drupal_render($output);
-      $commands[] = ctools_modal_command_display($view->human_name, $html);
+      $modal_title = $view->get_title();
+      $modal_title = empty($modal_title) ? $view->get_human_name() : $modal_title;
+      $commands[] = ctools_modal_command_display($modal_title, $html);
       // Wipe the system/ajax url, if we don't do this, the ajax_get_form()
       // callback will be called and any form actions performed within the view
       // such as changing the page or submitting the exposed filters form will
