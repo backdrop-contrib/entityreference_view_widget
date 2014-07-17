@@ -5,18 +5,6 @@
  */
 
 /**
- * Implements hook_entity_info_alter().
- */
-function entityreference_view_widget_entity_info_alter(&$info) {
-  foreach ($info as $entity_type => $data) {
-    $info[$entity_type]['view modes']['entityreference_view_widget'] = array(
-      'label' => t('Entity Reference View Widget'),
-      'custom settings' => TRUE,
-    );
-  }
-}
-
-/**
  * Implements hook_views_data_alter().
  */
 function entityreference_view_widget_views_data_alter(&$data) {
