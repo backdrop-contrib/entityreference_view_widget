@@ -114,6 +114,12 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
       '#description' => t('If enabled, the modal window will close after you had selected the entities from the view and submitted your selection.'),
       '#default_value' => isset($settings['close_modal']) ? $settings['close_modal'] : '',
     );
+    $element['allow_duplicates'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Allow the same entity to be referenced multiple times.'),
+      '#description' => t('If enabled, this will allow you to reference the same entity multiple times.'),
+      '#default_value' => isset($settings['allow_duplicates']) ? $settings['allow_duplicates'] : FALSE,
+    );
   }
 
   return $element;
@@ -353,7 +359,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
     $widget_settings = $form_state['ervw_settings'];
     $selected_entity_ids = !empty($form_state['values']['selected_entity_ids']) ? explode(';', $form_state['values']['selected_entity_ids']) : array();
     $input_ids = array_merge($selected_entity_ids, $form_state['input']['entity_ids']);
-    $entity_ids = array_unique($input_ids);
+    $entity_ids = !empty($widget_settings['allow_duplicates']) ? $input_ids : array_unique($input_ids);
     $selected_amount = count($entity_ids);
 
     // If the user selected too many items...
@@ -391,12 +397,12 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
   $rows = array();
   $entities = entity_load($settings['target_type'], $entity_ids);
   if (!empty($entity_ids)) {
-    $max_delta = count($entities);
+    $max_delta = count($entity_ids);
     $weight_options = drupal_map_assoc(range(- $max_delta, $max_delta));
     $delta = 0;
-    foreach ($entities as $entity_id => $entity) {
+    foreach ($entity_ids as $entity_id) {
       $frontend_id = drupal_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
-      $label = entity_label($settings['target_type'], $entity);
+      $label = entity_label($settings['target_type'], $entities[$entity_id]);
       $name = $settings['element'] . '[' . $settings['langcode'] . '][' . $delta . ']';
 
       $rows[] = array(
