@@ -363,7 +363,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
       $commands[] = ajax_command_replace('#' . $widget_settings['table_id'] . ' tbody', '<tbody>' . render($rows) . '</tbody>');
       // Make the table rows draggables.
       if ($widget_settings['field']['cardinality'] != 1) {
-        $commands[] = entityreference_view_widget_command_draggable($widget_settings['table_id'], $widget_settings['field']['cardinality']);
+        $commands[] = entityreference_view_widget_command_draggable($widget_settings['table_id']);
       }
       // Automatically close the modal if necessary.
       if (!empty($widget_settings['close_modal'])) {
