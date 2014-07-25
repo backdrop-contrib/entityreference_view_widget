@@ -282,6 +282,14 @@ function _entityreference_view_widget_add_resources(&$form) {
  */
 function entityreference_view_widget_validate($element, &$form_state, $form) {
   array_pop($element['#parents']);
+  $form_existing = drupal_array_get_nested_value($form, $element['#parents']);
+
+  // Modules like entityreference_prepopulate might hide or disable the field,
+  // in that case we shouldn't check for user input.
+  if (!empty($form_existing['#disabled']) || (isset($form_existing['#access']) && !$form_existing['#access'])) {
+    return;
+  }
+
   $input = drupal_array_get_nested_value($form_state['input'], $element['#parents']);
   $settings = $element['#ervw_settings'];
 
@@ -296,7 +304,6 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
     $form_state['ervw_ids'][$settings['index']] = $entity_ids;
     $rows = entityreference_view_widget_rows($entity_ids, $settings);
     // Put back the rows in the form.
-    $form_existing = drupal_array_get_nested_value($form, $element['#parents']);
     drupal_array_set_nested_value($form, $element['#parents'], $form_existing + $rows);
   }
   form_set_value($element, $input, $form_state);
