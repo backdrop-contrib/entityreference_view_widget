@@ -321,37 +321,34 @@ function entityreference_view_widget_modal_form($form, &$form_state, $context) {
   $form['view-markup'] = array(
     '#markup' => $context['view_markup'],
   );
-  // Do not render the submit buttons if there's no views result.
-  if (!empty($context['view']->result)) {
-    $form['selected_entity_ids'] = array(
-      '#type' => 'hidden',
+  $form['selected_entity_ids'] = array(
+    '#type' => 'hidden',
+    '#attributes' => array(
+      'id' => 'ervw-modal-form-selected-entity-ids',
+    ),
+  );
+  $form['submit'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('entityreference-view-widget-modal-submit'),
+      'data-table-id' => $context['settings']['table_id'],
+    ),
+    '#value' => '',
+    'button_add' => array(
+      '#type' => 'button',
+      '#value' => t('Submit'),
       '#attributes' => array(
-        'id' => 'ervw-modal-form-selected-entity-ids',
+        'class' => array('button'),
       ),
+      '#ajax' => array(
+        'callback' => 'entityreference_view_widget_ajax',
+      ),
+    ),
+  );
+  if ($context['settings']['field']['cardinality'] != 1) {
+    $form['submit']['select_all'] = array(
+      '#markup' => l(t('Select all'), '', array('attributes' => array('id' => 'entityreference-view-widget-select-all'))),
     );
-    $form['submit'] = array(
-      '#type' => 'container',
-      '#attributes' => array(
-        'class' => array('entityreference-view-widget-modal-submit'),
-        'data-table-id' => $context['settings']['table_id'],
-      ),
-      '#value' => '',
-      'button_add' => array(
-        '#type' => 'button',
-        '#value' => t('Submit'),
-        '#attributes' => array(
-          'class' => array('button'),
-        ),
-        '#ajax' => array(
-          'callback' => 'entityreference_view_widget_ajax',
-        ),
-      ),
-    );
-    if ($context['settings']['field']['cardinality'] != 1) {
-      $form['submit']['select_all'] = array(
-        '#markup' => l(t('Select all'), '', array('attributes' => array('id' => 'entityreference-view-widget-select-all'))),
-      );
-    }
   }
   return $form;
 }
