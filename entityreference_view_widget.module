@@ -406,6 +406,9 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
     $weight_options = drupal_map_assoc(range(- $max_delta, $max_delta));
     $delta = 0;
     foreach ($entity_ids as $entity_id) {
+      if (!isset($entities[$entity_id])) {
+        continue;
+      }
       $frontend_id = drupal_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
       $label = entity_label($settings['target_type'], $entities[$entity_id]);
       $name = $settings['element'] . '[' . $settings['langcode'] . '][' . $delta . ']';
