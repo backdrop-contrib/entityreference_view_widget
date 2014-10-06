@@ -18,7 +18,7 @@
           selected_ids += $(this).val() + ';';
         });
         if (selected_ids.length > 0) {
-          $('#ervw-modal-form-selected-entity-ids').val(selected_ids.substring(0, selected_ids.length - 1));
+          $('#ervw-modal-form-selected-entity-ids').val(selected_ids.substring(0, selected_ids.length - 1)).trigger('change');
         }
       });
       var checkboxes = '#modal-content input[name="entity_ids[]"]';
