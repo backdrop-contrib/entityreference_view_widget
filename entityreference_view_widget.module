@@ -306,7 +306,13 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
   form_set_value($element, $input, $form_state);
 
   if ($settings['instance']['required'] && empty($valid)) {
-    form_set_error($settings['element'], t('@f field is required!', array('@f' => $settings['instance']['label'])));
+    if (isset($form_existing['#field_parents']) && empty($form_existing['#field_parents'])) {
+      form_set_error($settings['element'], t('@f field is required.', array('@f' => $settings['instance']['label'])));
+    }
+    else {
+      // Modules utilizing #field_parents like Inline Entity Form requires different sort of form error.
+      form_error($element, t('@f field is required.', array('@f' => $settings['instance']['label'])));
+    }
   }
 }
 
