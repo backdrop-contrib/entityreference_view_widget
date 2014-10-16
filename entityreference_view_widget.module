@@ -273,6 +273,12 @@ function _entityreference_view_widget_add_resources(&$form) {
  */
 function entityreference_view_widget_validate($element, &$form_state, $form) {
   array_pop($element['#parents']);
+
+  // In case the user doesn't have access to this field, keep old values.
+  if (isset($element['#access']) && !$element['#access']) {
+    return;
+  }
+
   $form_existing = drupal_array_get_nested_value($form, $element['#parents']);
 
   // Modules like entityreference_prepopulate might hide or disable the field,
