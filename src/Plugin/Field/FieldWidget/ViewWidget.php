@@ -148,15 +148,22 @@ class ViewWidget extends WidgetBase {
       if ($view = Views::getView($view_id)) {
         $view->setAjaxEnabled(TRUE);
         $preview = $view->preview($display_id);
-        $modal_content['view'] = $preview;
         $response->addCommand(new SettingsCommand($view->element['#attached']['js'][0]['data'], TRUE));
         $form_settings = array(
           'view' => $view,
           'preview' => $preview,
         );
         $modal_form = \Drupal::formBuilder()->getForm('Drupal\entity_reference_view_widget\Form\ModalForm', $form_settings);
-        $response->addCommand(new SettingsCommand($modal_form['add_items']['#attached']['js'][0]['data'], TRUE));
-        $response->addCommand(new OpenModalDialogCommand($view->storage->label(), drupal_render($modal_form), array('width' => 700)));
+        $response->addCommand(new SettingsCommand($modal_form['actions']['add_items']['#attached']['js'][0]['data'], TRUE));
+        $modal_content = '';
+
+        // Display the exposed widgets on top of the modal.
+        if (!empty($view->exposed_widgets)) {
+          $modal_content .= drupal_render($view->exposed_widgets);
+        }
+        $modal_content .= drupal_render($modal_form);
+
+        $response->addCommand(new OpenModalDialogCommand($view->storage->label(), $modal_content, array('width' => 700)));
       }
     }
 

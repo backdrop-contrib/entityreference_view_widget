@@ -31,20 +31,12 @@ class ModalForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $build_info = $form_state->getBuildInfo();
     $settings = $build_info['args'][0];
-    $view = $settings['view'];
-    $html = '';
-    // Update the form id to match the jquery selector.
-    $form['#id'] = Html::cleanCssIdentifier('views-exposed-form-' . $view->storage->id() . '-' . $view->current_display);
-
-    if (!empty($view->exposed_widgets)) {
-      $html .= '<div class="view-filters">' . drupal_render($view->exposed_widgets) . '</div>';
-    }
-    $html .= drupal_render($settings['preview']);
     $form['view'] = array(
-      '#markup' => $html,
+      '#markup' => drupal_render($settings['preview']),
     );
 
-    $form['add_items'] = array(
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['add_items'] = array(
       '#value' => t('Add items'),
       '#type' => 'button',
       '#ajax' => array(
