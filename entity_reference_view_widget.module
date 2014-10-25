@@ -1,0 +1,10 @@
+<?php
+
+/**
+ * Implemenents hook_preprocess_HOOK().
+ */
+function entity_reference_view_widget_preprocess_views_view(&$variables) {
+  if ($variables['view']->getDisplay()->getPluginID() == 'entity_reference_view_widget') {
+    $variables['exposed'] = '';
+  }
+}

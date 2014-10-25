@@ -10,6 +10,7 @@ namespace Drupal\entity_reference_view_widget\Plugin\Field\FieldWidget;
 use Drupal\Component\Utility\String;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenModalDialogCommand;
+use Drupal\Core\Ajax\SettingsCommand;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -111,7 +112,7 @@ class ViewWidget extends WidgetBase {
       '#type' => 'textfield',
     );
 
-    return array('target_id' => $element);
+    return $element;
   }
 
   /**
@@ -121,17 +122,16 @@ class ViewWidget extends WidgetBase {
    */
   protected function formMultipleElements(FieldItemListInterface $items, array &$form, FormStateInterface $form_state) {
     $elements = parent::formMultipleElements($items, $form, $form_state);
+    $form['#attached']['library'][] = 'views/views.ajax';
 
-    if (isset($elements['add_more'])) {
-      $elements['add_more'] = array_merge($elements['add_more'], array(
-        '#type' => 'button',
-        '#value' => t('Add items'),
-        '#submit' => array(),
-        '#ajax' => array(
-          'callback' => array($this, 'ajaxCallback'),
-        ),
-      ));
-    }
+    $elements['add_more'] = array(
+      '#type' => 'button',
+      '#value' => t('Add items'),
+      '#ajax' => array(
+        'callback' => array($this, 'ajaxCallback'),
+      ),
+      '#limit_validation_errors' => array(),
+    );
 
     return $elements;
   }
@@ -146,7 +146,17 @@ class ViewWidget extends WidgetBase {
     if (!empty($view)) {
       list($view_id, $display_id) = explode('|', $view);
       if ($view = Views::getView($view_id)) {
-        $response->addCommand(new OpenModalDialogCommand($view->storage->label(), drupal_render($view->preview($display_id)), array('width' => '700')));
+        $view->setAjaxEnabled(TRUE);
+        $preview = $view->preview($display_id);
+        $modal_content['view'] = $preview;
+        $response->addCommand(new SettingsCommand($view->element['#attached']['js'][0]['data'], TRUE));
+        $form_settings = array(
+          'view' => $view,
+          'preview' => $preview,
+        );
+        $modal_form = \Drupal::formBuilder()->getForm('Drupal\entity_reference_view_widget\Form\ModalForm', $form_settings);
+        $response->addCommand(new SettingsCommand($modal_form['add_items']['#attached']['js'][0]['data'], TRUE));
+        $response->addCommand(new OpenModalDialogCommand($view->storage->label(), drupal_render($modal_form), array('width' => 700)));
       }
     }
 
