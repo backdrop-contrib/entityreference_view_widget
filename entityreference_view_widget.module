@@ -128,21 +128,25 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $element['#theme'] = 'entityreference_view_widget_widget';
   // Build the path of the element.
   $parents_path = $field['field_name'];
+  $index_parts = array();
   if (!empty($form['#parents'])) {
     $parents = $form['#parents'];
     $first_parent = array_shift($parents);
     $parents_path = $first_parent;
+    $index_parts[] = $first_parent;
     if (!empty($parents)) {
       $parents_path .= '[' . implode('][', $parents) . ']';
+      $index_parts = array_merge($index_parts, $parents);
     }
     $parents_path .= '[' . $field['field_name'] . ']';
   }
-  $frontend_id = drupal_html_id($field['field_name']);
 
-  $index = _entityreference_view_widget_get_index();
+  $index_parts[] = $field['field_name'];
+  $index = implode('-', $index_parts);
+  $index = drupal_html_id($index);
   $settings = array(
     'langcode' => $langcode,
-    'table_id' => $frontend_id . '-values',
+    'table_id' => $index . '-values',
     'element' => $parents_path,
     'instance' => $instance,
     'field' => $field,
@@ -181,15 +185,6 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $element += entityreference_view_widget_rows($entity_ids, $settings);
 
   return $element;
-}
-
-/**
- * Dumb helper function used to return a different number for each element.
- */
-function _entityreference_view_widget_get_index() {
-  $index = & drupal_static(__FUNCTION__, 0);
-  $index++;
-  return $index;
 }
 
 /**
