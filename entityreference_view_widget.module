@@ -46,6 +46,14 @@ function entityreference_view_widget_field_widget_info() {
       'multiple values' => FIELD_BEHAVIOR_CUSTOM,
       'default value' => FIELD_BEHAVIOR_NONE,
     ),
+    'settings' => array(
+      'view' => '',
+      'pass_arguments' => '',
+      'close_modal' => '',
+      'allow_duplicates' => FALSE,
+      'rendered_entity' => FALSE,
+      'view_mode' => FALSE,
+    ),
   );
 
   return $widgets;
@@ -90,9 +98,34 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
     );
     $element['allow_duplicates'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Allow the same entity to be referenced multiple times.'),
+      '#title' => t('Allow the same entity to be referenced multiple times'),
       '#description' => t('If enabled, this will allow you to reference the same entity multiple times.'),
       '#default_value' => isset($settings['allow_duplicates']) ? $settings['allow_duplicates'] : FALSE,
+    );
+    $element['rendered_entity'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Display the rendered entity'),
+      '#description' => t('Allows you to display the rendered entity instead of the label next to the checkbox.'),
+      '#default_value' => isset($settings['rendered_entity']) ? $settings['rendered_entity'] : FALSE,
+    );
+
+    $entity_info = entity_get_info($instance['entity_type']);
+    $view_modes = array();
+    foreach ($entity_info['view modes'] as $mode => $mode_info) {
+      $view_modes[$mode] = check_plain($mode_info['label']);
+    }
+
+    $element['view_mode'] = array(
+      '#type' => 'select',
+      '#title' => t('View mode'),
+      '#options' => $view_modes,
+      '#description' => t('Allows you to select the view mode used to render the entity next to the checkbox.'),
+      '#default_value' => isset($settings['view_mode']) ? $settings['view_mode'] : '',
+      '#states' => array(
+        'invisible' => array(
+          ':input[name="instance[widget][settings][rendered_entity]"]' => array('checked' => FALSE),
+        ),
+      ),
     );
   }
 
@@ -358,14 +391,22 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
         continue;
       }
       $frontend_id = drupal_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
-      $label = entity_label($settings['target_type'], $entities[$entity_id]);
+
+      if (!empty($settings['rendered_entity'])) {
+        $entity_view = entity_view($settings['target_type'], array($entities[$entity_id]), $settings['view_mode']);
+        $suffix = drupal_render($entity_view);
+      }
+      else {
+        $label = entity_label($settings['target_type'], $entities[$entity_id]);
+        $suffix = check_plain($label);
+      }
       $name = $settings['element'] . '[' . $settings['langcode'] . '][' . $delta . ']';
 
       $rows[] = array(
         $settings['column'] => array(
           '#type' => 'checkbox',
           '#delta' => $delta,
-          '#field_suffix' => '<label class="option" for="' . $frontend_id . '">' . check_plain($label) . '</label>',
+          '#field_suffix' => '<label class="option" for="' . $frontend_id . '">' . $suffix . '</label>',
           '#return_value' => $entity_id,
           '#value' => $entity_id,
           '#title_display' => 'after',
