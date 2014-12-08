@@ -1,28 +1,9 @@
 (function($) {
   Drupal.behaviors.entityreferenceViewWidget = {
     attach: function(context, settings) {
-      // The following code is a workaround to make the eventual exposed filters
-      // work on the embedded view displayed in the modal, probably remove once
-      // http://drupal.org/node/1809958 has been merged.
-      $('.ervw-add-items').bind('mousedown',
-        function() {
-          if (typeof Drupal.settings['views'] != 'undefined') {
-            Drupal.settings['views']['ajaxViews'] = null;
-          }
-        }
-      );
-      $('.entityreference-view-widget-modal-submit').each(function() {
-        var selected_ids = '';
-        var selector = '#' + $(this).data('table-id') + ' input[type=checkbox]:checked';
-        $(selector).each(function(i) {
-          selected_ids += $(this).val() + ';';
-        });
-        if (selected_ids.length > 0) {
-          $('#ervw-modal-form-selected-entity-ids').val(selected_ids.substring(0, selected_ids.length - 1)).trigger('change');
-        }
-      });
-      var checkboxes = '#modal-content input[name="entity_ids[]"]';
-      $('#entityreference-view-widget-select-all').unbind('click').text(Drupal.t('Select all')).data('unselect', 0).click(function() {
+      var checkboxes = '#modal-content input.entity-reference-view-widget-select';
+      var selectAllSelector = '#entityreference-view-widget-select-all';
+      $(selectAllSelector).unbind('click').data('unselect', 0).click(function() {
         if ($(this).data('unselect')) {
           $(checkboxes).removeAttr('checked');
           $(this).data('unselect', 0).text(Drupal.t('Select all'));
@@ -33,6 +14,27 @@
         }
         return false;
       });
+
+      if (settings.ervw_settings) {
+        if (settings.ervw_settings.cardinality != -1) {
+          $(selectAllSelector).remove();
+        }
+
+        var selector = '#' + settings.ervw_settings.table_id + ' input[type=checkbox]:checked';
+        var selected_ids = '';
+        $(selector).each(function() {
+          selected_ids += $(this).val() + ';';
+        });
+        if (selected_ids.length > 0) {
+          $('input[name="selected_entity_ids"]').val(selected_ids.substring(0, selected_ids.length - 1)).trigger('change');
+        }
+      }
+
+      // We need to pass the settings via an hidden field because Views doesn't
+      // allow us to pass data between ajax requests.
+      if (settings.ervw_settings_string) {
+        $('input[name="ervw_settings"]').val(settings.ervw_settings_string);
+      }
     }
   }
 
