@@ -518,7 +518,7 @@ function theme_entityreference_view_widget_widget($variables) {
 
   if (empty($rows)) {
     $rows[][] = array(
-      'data' => t('No items had been added yet. Click "Add items" to launch the widget.'),
+      'data' => t('No items have been added yet. Click "Add items" to launch the widget.'),
       'colspan' => '3',
     );
   }
