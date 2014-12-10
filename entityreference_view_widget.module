@@ -339,10 +339,10 @@ function entityreference_view_widget_command_draggable($selector) {
  */
 function entityreference_view_widget_ajax($form, $form_state) {
   $commands = array();
-  $form_state['values']['entityreference_view_widget'] = array_filter($form_state['values']['entityreference_view_widget']);
-  if (isset($form_state['input']['ervw_settings']) && !empty($form_state['values']['entityreference_view_widget'])) {
+  $form_state['values']['entityreference_view_widget'] = is_array($form_state['values']['entityreference_view_widget']) ? array_filter($form_state['values']['entityreference_view_widget']) : array($form_state['values']['entityreference_view_widget']);
+  if (isset($form_state['values']['ervw_settings']) && !empty($form_state['values']['entityreference_view_widget'])) {
     // Retrieve the settings array.
-    $widget_settings = unserialize($form_state['input']['ervw_settings']);
+    $widget_settings = unserialize($form_state['values']['ervw_settings']);
     $selected_entity_ids = !empty($form_state['values']['selected_entity_ids']) ? explode(';', $form_state['values']['selected_entity_ids']) : array();
     $input_ids = array_merge($selected_entity_ids, $form_state['values']['entityreference_view_widget']);
     $entity_ids = !empty($widget_settings['allow_duplicates']) ? $input_ids : array_unique($input_ids);

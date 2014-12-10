@@ -16,7 +16,7 @@
       });
 
       if (settings.ervw_settings) {
-        if (settings.ervw_settings.cardinality != -1) {
+        if (settings.ervw_settings.cardinality != -1 || $(checkboxes).length === 0) {
           $(selectAllSelector).remove();
         }
 
