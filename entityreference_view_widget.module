@@ -508,12 +508,20 @@ function theme_entityreference_view_widget_widget($variables) {
   }
 
   $output = '<div class="form-item">';
+  $form_errors = form_get_errors();
+  $classes = array('field-multiple-table');
+
+  // Add an error class to the table in case of error.
+  if (isset($form_errors[$settings['element']])) {
+    $classes[] = 'error';
+  }
+
   $output .= theme('table', array(
     'header' => $header,
     'rows' => $rows,
     'attributes' => array(
       'id' => $settings['table_id'],
-      'class' => array('field-multiple-table')
+      'class' => $classes,
     ),
   ));
   $output .= $widget['#description'] ? '<div class="description">' . $widget['#description'] . '</div>' : '';
