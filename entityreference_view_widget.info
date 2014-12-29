@@ -8,3 +8,4 @@ dependencies[] = ctools
 
 files[] = views/entityreference_view_widget_handler_field_checkbox.inc
 files[] = views/entityreference_view_widget_plugin_display.inc
+files[] = views/entityreference_view_widget.views_default.inc
