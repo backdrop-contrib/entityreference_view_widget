@@ -223,6 +223,7 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       }
 
       $view->set_display($target_view[1]);
+      $view->dom_id = $view->name . '-' . $target_view[1];
       $view->display_handler->set_option('use_ajax', TRUE);
       $settings['cardinality'] = $settings['field']['cardinality'];
       unset($settings['field']);
