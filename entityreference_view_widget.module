@@ -547,7 +547,7 @@ function theme_entityreference_view_widget_rows($variables) {
     $output[$row]  = '<tr class="draggable ' . current($zebra) . '">';
     $output[$row] .= '<td class="field-multiple-drag"></td>';
     $output[$row] .= '<td>' . render($variables['rows'][$row][$settings['column']]) . '</td>';
-    if ($settings['field']['cardinality'] !== '1') {
+    if ($settings['cardinality'] !== '1') {
       $output[$row] .= '<td class="delta-order tabledrag-hide">' . render($variables['rows'][$row]['_weight']) . '</td>';
     }
     $output[$row] .= '</tr>';
