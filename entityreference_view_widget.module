@@ -109,7 +109,14 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
       '#default_value' => isset($settings['rendered_entity']) ? $settings['rendered_entity'] : FALSE,
     );
 
-    $entity_info = entity_get_info($instance['entity_type']);
+    if (strpos($field['type'], '_reference') !== FALSE) {
+      $target_type = str_replace('_reference', '', $field['type']);
+    }
+    else {
+      $target_type = $field['settings']['target_type'];
+    }
+
+    $entity_info = entity_get_info($target_type);
     $view_modes = array();
     foreach ($entity_info['view modes'] as $mode => $mode_info) {
       $view_modes[$mode] = check_plain($mode_info['label']);
