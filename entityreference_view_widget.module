@@ -228,7 +228,7 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
         $arguments[0] = implode('+', $form_state['ervw_ids'][$settings['index']]);
       }
       // Allow the alteration of Views arguments.
-      drupal_alter('entityreference_view_widget_views_arguments', $arguments, $form_state);
+      drupal_alter('entityreference_view_widget_views_arguments', $arguments, $form_state, $view);
 
       if (!empty($arguments)) {
         $view->set_arguments($arguments);
