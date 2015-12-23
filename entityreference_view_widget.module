@@ -143,6 +143,7 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
  * Implements hook_field_widget_form().
  */
 function entityreference_view_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $ids = &drupal_static(__FUNCTION__);
   _entityreference_view_widget_add_resources($form);
   $element['#theme'] = 'entityreference_view_widget_widget';
   // Build the path of the element.
@@ -162,14 +163,22 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
 
   $index_parts[] = $field['field_name'];
   $index = implode('-', $index_parts);
-  $index = drupal_html_id($index);
+
+  // Some modules, like entity_translation for example, might render the element
+  // more than once. This can cause ervw to break when drupal_html_id() creates
+  // a unique ID on subsequent passes that does not match the original element.
+  // Cache and use the first index value that is created.
+  if (!isset($ids[$index])) {
+    $ids[$index] = drupal_html_id($index);
+  }
+
   $settings = array(
     'langcode' => $langcode,
-    'table_id' => $index . '-values',
+    'table_id' => $ids[$index] . '-values',
     'element' => $parents_path,
     'instance' => $instance,
     'field' => $field,
-    'index' => $index,
+    'index' => $ids[$index],
     'column' => key($field['columns']),
   );
   // Append the widget settings to the array.
@@ -194,7 +203,7 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
       'class' => array('ervw-add-items'),
     ),
     '#type' => 'button',
-    '#name' => 'add_more_' . $index,
+    '#name' => 'add_more_' . $ids[$index],
   );
 
   // Load the items for form rebuilds from the field state.
