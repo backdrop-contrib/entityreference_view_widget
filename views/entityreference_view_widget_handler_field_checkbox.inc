@@ -56,7 +56,7 @@ class entityreference_view_widget_handler_field_checkbox extends views_handler_f
       $entity_id = $values->_entity_properties[$this->view->base_field];
     }
     else {
-      $entity_id = $values->{$this->view->base_field};
+      $entity_id = $this->get_value($values, $this->view->base_field);
     }
     if (empty($entity_id)) {
       return;
