@@ -230,6 +230,7 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     $target_view = explode('|', $settings['view']);
     $view = views_get_view($target_view[0]);
     if (!empty($view)) {
+      _entityreference_view_widget_add_resources($form);
       $arguments = array();
       // If the pass argument setting has been checked, pass a list of entity
       // ids to the view.
