@@ -213,7 +213,9 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
 
   $entity_ids = array();
   foreach ($items as $item) {
-    $entity_ids[] = $item[$settings['column']];
+    if (isset($item[$settings['column']])) {
+      $entity_ids[] = $item[$settings['column']];
+    }
   }
   $element += entityreference_view_widget_rows($entity_ids, $settings);
 
