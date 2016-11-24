@@ -1,3 +1,8 @@
+/**
+ * @file
+ * File: entityreference_view_widget.js.
+ */
+
 (function($) {
   Drupal.behaviors.entityreferenceViewWidget = {
     attach: function(context, settings) {

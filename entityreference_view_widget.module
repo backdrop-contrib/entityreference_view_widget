@@ -339,7 +339,8 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
       form_set_error($settings['element'], t('@f field is required.', array('@f' => $settings['instance']['label'])));
     }
     else {
-      // Modules utilizing #field_parents like Inline Entity Form requires different sort of form error.
+      // Modules utilizing #field_parents like Inline Entity Form
+      // requires different sort of form error.
       form_error($element, t('@f field is required.', array('@f' => $settings['instance']['label'])));
     }
   }
@@ -398,7 +399,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
     // If the user selected too many items...
     if ($cardinality > 0 && $cardinality < $selected_amount && $cardinality !== 1) {
       $error_message = t('Please select no more than @cardinality values', array('@cardinality' => $cardinality));
-      $commands[] = ajax_command_prepend('#modal-content', '<div class="messages error">' . $error_message  . '</div>');
+      $commands[] = ajax_command_prepend('#modal-content', '<div class="messages error">' . $error_message . '</div>');
     }
     else {
       $rows['#theme'] = 'entityreference_view_widget_rows';
@@ -436,7 +437,7 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
   $entities = entity_load($settings['target_type'], $entity_ids);
   if (!empty($entity_ids)) {
     $max_delta = count($entity_ids);
-    $weight_options = drupal_map_assoc(range(- $max_delta, $max_delta));
+    $weight_options = drupal_map_assoc(range(-$max_delta, $max_delta));
     $delta = 0;
     foreach ($entity_ids as $entity_id) {
       if (!isset($entities[$entity_id])) {
@@ -515,7 +516,7 @@ function theme_entityreference_view_widget_widget($variables) {
   $rows = array();
 
   // Sort items according to '_weight' (needed when the form comes back after
-  // preview or failed validation)
+  // preview or failed validation).
   $items = array();
   foreach (element_children($widget) as $key) {
     if ($key === 'add_more') {

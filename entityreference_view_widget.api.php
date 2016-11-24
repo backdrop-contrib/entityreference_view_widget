@@ -13,14 +13,17 @@
  * alter arguments passed (besides the "already referenced entities"
  * argument) to entity reference view. This hook allows you to do that.
  *
- * @param $arguments
+ * @param array $arguments
  *   The Arguments array to be altered.
- * @param $form_state
+ * @param array $form_state
  *   A keyed array containing the current state of the form.
- * @param $view
+ * @param object $view
  *   The view object that is being used.
+ *
+ * @codingStandardsIgnoreStart
  */
 function hook_entityreference_view_widget_views_arguments_alter(&$arguments, $form_state, $view) {
+  // @codingStandardsIgnoreEnd
   if (!empty($form_state['values']['your_field'])) {
     $arguments[] = $form_state['values']['your_field'][LANGUAGE_NONE][0]['value'];
   }
