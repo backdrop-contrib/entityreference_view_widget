@@ -265,7 +265,7 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       $settings = array(
         'entityReferenceViewWidget' => array(
           'settings' => $settings,
-          'serialized' => serialize($settings),
+          'serialized' => json_encode($settings),
         ),
       );
       drupal_add_js($settings, 'setting');
@@ -389,7 +389,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
   $form_state['values']['entityreference_view_widget'] = is_array($form_state['values']['entityreference_view_widget']) ? array_filter($form_state['values']['entityreference_view_widget']) : array($form_state['values']['entityreference_view_widget']);
   if (!empty($form_state['values']['ervw_settings']) && !empty($form_state['values']['entityreference_view_widget'])) {
     // Retrieve the settings array.
-    $widget_settings = unserialize($form_state['values']['ervw_settings']);
+    $widget_settings = (array) json_decode($form_state['values']['ervw_settings']);
     $selected_entity_ids = !empty($form_state['values']['selected_entity_ids']) ? explode(';', $form_state['values']['selected_entity_ids']) : array();
     $input_ids = array_merge($selected_entity_ids, $form_state['values']['entityreference_view_widget']);
     $entity_ids = !empty($widget_settings['allow_duplicates']) ? $input_ids : array_unique($input_ids);
