@@ -213,9 +213,10 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
 
   $entity_ids = array();
   foreach ($items as $item) {
-    if (isset($item[$settings['column']])) {
-      $entity_ids[] = $item[$settings['column']];
+    if (empty($item[$settings['column']])) {
+      continue;
     }
+    $entity_ids[] = $item[$settings['column']];
   }
   $element += entityreference_view_widget_rows($entity_ids, $settings);
 
@@ -494,6 +495,9 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
           'checked' => 'checked',
           'id' => $frontend_id,
           'data-delta' => $delta,
+          'class' => array(
+            'entityreference-view-widget-checkbox',
+          ),
         ),
       ),
       // For some reasons, when using the weight element, when submitting the
@@ -615,7 +619,7 @@ function theme_entityreference_view_widget_rows($variables) {
 
   $settings = $variables['rows']['#widget_settings'];
   foreach (element_children($variables['rows']) as $row) {
-    $output[$row]  = '<tr class="draggable ' . current($zebra) . '">';
+    $output[$row]  = '<tr class="entityreference-view-widget-table-row draggable ' . current($zebra) . '">';
     $output[$row] .= '<td class="field-multiple-drag"></td>';
     $output[$row] .= '<td>' . render($variables['rows'][$row][$settings['column']]) . '</td>';
     if ($settings['cardinality'] !== '1') {
