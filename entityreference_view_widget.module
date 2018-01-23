@@ -460,59 +460,61 @@ function entityreference_view_widget_ajax($form, $form_state) {
 function entityreference_view_widget_rows($entity_ids, $settings) {
   $rows = array();
   $entities = entity_load($settings['target_type'], $entity_ids);
-  if (!empty($entity_ids)) {
-    $max_delta = count($entity_ids);
-    $weight_options = drupal_map_assoc(range(-$max_delta, $max_delta));
-    $delta = 0;
-    foreach ($entity_ids as $entity_id) {
-      if (!isset($entities[$entity_id])) {
-        continue;
-      }
-      $frontend_id = drupal_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
 
-      if (!empty($settings['rendered_entity'])) {
-        $entity_view = entity_view($settings['target_type'], array($entities[$entity_id]), $settings['view_mode']);
-        $suffix = drupal_render($entity_view);
-      }
-      else {
-        $label = entity_label($settings['target_type'], $entities[$entity_id]);
-        $suffix = check_plain($label);
-      }
-      $name = $settings['element'] . '[' . $settings['langcode'] . '][' . $delta . ']';
-
-      $rows[] = array(
-        $settings['column'] => array(
-          '#type' => 'checkbox',
-          '#delta' => $delta,
-          '#field_suffix' => '<label class="option" for="' . $frontend_id . '">' . $suffix . '</label>',
-          '#return_value' => $entity_id,
-          '#value' => $entity_id,
-          '#title_display' => 'after',
-          '#name' => $name . '[' . $settings['column'] . ']',
-          '#attributes' => array(
-            'checked' => 'checked',
-            'id' => $frontend_id,
-            'data-delta' => $delta,
-          ),
-        ),
-        // For some reasons, when using the weight element, when submitting the
-        // modal form the element is not displayed.
-        '_weight' => array(
-          '#type' => 'select',
-          '#options' => $weight_options,
-          '#title' => t('Weight'),
-          '#value' => $delta,
-          '#title_display' => 'invisible',
-          '#name' => $name . '[_weight]',
-          '#attributes' => array(
-            'id' => $frontend_id . '-weight',
-            'class' => array(drupal_html_class($settings['element'] . '-delta-order')),
-          ),
-        ),
-      );
-      $delta++;
-    }
+  if (empty($entity_ids) || empty($entities)) {
+    return $rows;
   }
+  $max_delta = count($entities);
+  $weight_options = drupal_map_assoc(range(-$max_delta, $max_delta));
+  $delta = 0;
+
+  foreach ($entities as $entity_id => $entity) {
+    $frontend_id = drupal_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
+
+    if (!empty($settings['rendered_entity'])) {
+      $entity_view = entity_view($settings['target_type'], array($entity), $settings['view_mode']);
+      $suffix = drupal_render($entity_view);
+    }
+    else {
+      $label = entity_label($settings['target_type'], $entities[$entity_id]);
+      $suffix = check_plain($label);
+    }
+    $name = $settings['element'] . '[' . $settings['langcode'] . '][' . $delta . ']';
+
+    $rows[] = array(
+      $settings['column'] => array(
+        '#type' => 'checkbox',
+        '#delta' => $delta,
+        '#field_suffix' => '<label class="option" for="' . $frontend_id . '">' . $suffix . '</label>',
+        '#return_value' => $entity_id,
+        '#value' => $entity_id,
+        '#title_display' => 'after',
+        '#name' => $name . '[' . $settings['column'] . ']',
+        '#attributes' => array(
+          'checked' => 'checked',
+          'id' => $frontend_id,
+          'data-delta' => $delta,
+        ),
+      ),
+      // For some reasons, when using the weight element, when submitting the
+      // modal form the element is not displayed.
+      '_weight' => array(
+        '#type' => 'select',
+        '#options' => $weight_options,
+        '#title' => t('Weight'),
+        '#value' => $delta,
+        '#title_display' => 'invisible',
+        '#name' => $name . '[_weight]',
+        '#attributes' => array(
+          'id' => $frontend_id . '-weight',
+          'class' => array(drupal_html_class($settings['element'] . '-delta-order')),
+        ),
+      ),
+    );
+    $delta++;
+  }
+  // Allow other modules to alter the rows.
+  drupal_alter('entityreference_view_widget_rows', $rows, $entities, $settings);
   return $rows;
 }
 

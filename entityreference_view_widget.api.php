@@ -28,3 +28,17 @@ function hook_entityreference_view_widget_views_arguments_alter(&$arguments, $fo
     $arguments[] = $form_state['values']['your_field'][LANGUAGE_NONE][0]['value'];
   }
 }
+
+/**
+ * Alter the widget table rows.
+ *
+ * @param $rows
+ *   The renderable table rows.
+ * @param $entities
+ *   The loaded entities.
+ * @param $settings
+ *   The widget settings.
+ */
+function hook_entityreference_view_widget_rows_alter(&$rows, $entities, $settings) {
+  // No example.
+}
