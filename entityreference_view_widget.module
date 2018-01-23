@@ -320,6 +320,25 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
     return;
   }
 
+  // In case of entity_translation and we are creating a translation, default
+  // current translation language values for this field are empty, but original
+  // language values will be displayed. We want to use them as current
+  // translation default values.
+  // Let user clearing values for this current translation next.
+  $field_name = reset($form_state_parents);
+  // Check current field is multilingual and some values has not been defined by
+  // user.
+  if (isset($form[$field_name]['#multilingual']) && $form[$field_name]['#multilingual'] && empty($form_state['input'][$field_name][$form[$field_name]['#language']])) {
+    $original_language = $form['#entity']->translations->original;
+    // Check translation does not exist yet.
+    if (!empty($form['#entity']->{$field_name}[$original_language])) {
+      // Replace input values for current field form source language to current
+      // translation language.
+      $form_state['input'][$field_name][$form[$field_name]['#language']] = $form_state['input'][$field_name][$original_language];
+      unset($form_state['input'][$field_name][$original_language]);
+    }
+  }
+
   $input = drupal_array_get_nested_value($form_state['input'], $form_state_parents);
   $settings = $element['#ervw_settings'];
 
