@@ -232,6 +232,10 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     $target_view = explode('|', $settings['view']);
     $view = views_get_view($target_view[0]);
     if (!empty($view)) {
+      $view->set_display($target_view[1]);
+      $view->dom_id = $view->name . '-' . $target_view[1];
+      $view->display_handler->set_option('use_ajax', TRUE);
+
       _entityreference_view_widget_add_resources($form);
       $arguments = array();
       // If the pass argument setting has been checked, pass a list of entity
@@ -246,9 +250,6 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
         $view->set_arguments($arguments);
       }
 
-      $view->set_display($target_view[1]);
-      $view->dom_id = $view->name . '-' . $target_view[1];
-      $view->display_handler->set_option('use_ajax', TRUE);
       $settings['cardinality'] = $settings['field']['cardinality'];
       // Unset some values in order to keep a relatively small serialized
       // string.
