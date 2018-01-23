@@ -17,7 +17,7 @@
           $(this).data('unselect', 0).text(Drupal.t('Select all'));
         }
         else {
-          use_prop ? $(checkboxes).prop('checked',true) : $(checkboxes).$(checkboxes).attr('checked', 'checked');
+          use_prop ? $(checkboxes).prop('checked',true) : $(checkboxes).attr('checked', 'checked');
           $(this).data('unselect', 1).text(Drupal.t('Unselect all'));
         }
         return false;
