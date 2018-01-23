@@ -289,6 +289,11 @@ function _entityreference_view_widget_add_resources(&$form) {
   $module_path = drupal_get_path('module', 'entityreference_view_widget');
   $form['#attached']['js'][] = $module_path . '/entityreference_view_widget.js';
   $form['#attached']['css'][] = $module_path . '/entityreference_view_widget.css';
+
+  // Make sure required views javascript is loaded so that ajax
+  // events on exposed filters and pagers works correctly.
+  $form['#attached']['js'][] = drupal_get_path('module', 'views') . '/js/base.js';
+  $form['#attached']['js'][] = drupal_get_path('module', 'views') . '/js/ajax_view.js';
 }
 
 /**
