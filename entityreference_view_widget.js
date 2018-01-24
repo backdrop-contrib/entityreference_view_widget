@@ -10,6 +10,13 @@
 
       // Remove the reference when a checkbox is unchecked.
       if ($(widgetCheckboxSelector).length > 0) {
+        // Make sure the row is not removed when clicking on the checkbox label.
+        $(widgetCheckboxSelector).each(function () {
+          $('label', $(this).parent()).click(function (e) {
+            e.preventDefault();
+          });
+        });
+
         $(widgetCheckboxSelector).click(function () {
           if (!$(this).is(':checked')) {
             $(this).parents('.entityreference-view-widget-table-row').get(0).remove();
