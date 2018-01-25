@@ -33,19 +33,21 @@
 
       var checkboxes = '#modal-content input.entity-reference-view-widget-select';
       var selectAllSelector = '#entityreference-view-widget-select-all';
-      $(selectAllSelector).unbind('click').data('unselect', 0).click(function() {
-        // Use the proper jQuery method depending on the jQuery version.
-        var version = $.fn.jquery.split('.');
-        var use_prop = (version[0] > 1 || version[1] > 5);
-        if ($(this).data('unselect')) {
-          use_prop ? $(checkboxes).prop('checked',false) : $(checkboxes).removeAttr('checked');
-          $(this).data('unselect', 0).text(Drupal.t('Select all'));
-        }
-        else {
-          use_prop ? $(checkboxes).prop('checked',true) : $(checkboxes).attr('checked', 'checked');
-          $(this).data('unselect', 1).text(Drupal.t('Unselect all'));
-        }
-        return false;
+      // Use the proper jQuery method depending on the jQuery version.
+      var version = $.fn.jquery.split('.');
+      var use_prop = (version[0] > 1 || version[1] > 5);
+      $(selectAllSelector).once('processed', function() {
+        $(this).click(function(e) {
+          e.preventDefault();
+          if ($(this).data('unselect')) {
+            use_prop ? $(checkboxes).prop('checked', false) : $(checkboxes).removeAttr('checked');
+            $(this).data('unselect', 0).text(Drupal.t('Select all'));
+          }
+          else {
+            use_prop ? $(checkboxes).prop('checked',true) : $(checkboxes).attr('checked', 'checked');
+            $(this).data('unselect', 1).text(Drupal.t('Unselect all'));
+          }
+        });
       });
 
       if (settings.entityReferenceViewWidget) {
