@@ -6,28 +6,35 @@
 (function($) {
   Drupal.behaviors.entityreferenceViewWidget = {
     attach: function(context, settings) {
-      var widgetCheckboxSelector = '.entityreference-view-widget-checkbox';
+      var tableRowSelector = 'tr.entityreference-view-widget-table-row';
+      $(tableRowSelector).once('processed', function () {
+        var $row = $(this);
 
-      // Remove the reference when a checkbox is unchecked.
-      if ($(widgetCheckboxSelector).length > 0) {
-        // Make sure the row is not removed when clicking on the checkbox label.
-        $(widgetCheckboxSelector).each(function () {
-          $('label', $(this).parent()).click(function (e) {
-            e.preventDefault();
-          });
+        // Prevent item removal when clicking on checkbox labels.
+        $('label', $row).click(function (e) {
+          e.preventDefault();
         });
 
-        $(widgetCheckboxSelector).click(function () {
+        // Handle item removal.
+        $('input.entityreference-view-widget-checkbox', $row).click(function () {
           if (!$(this).is(':checked')) {
-            $(this).parents('.entityreference-view-widget-table-row').get(0).remove();
+            var $table = $row.parents('table.field-multiple-table:first');
+            $row.remove();
+
+            // If no rows are left, display an empty message.
+            if (!$(tableRowSelector, $table).length
+                && typeof settings.entityreferenceViewWidgetEmptyMessage !== 'undefined') {
+              $('tbody', $table).html('<tr class="odd"><td colspan="3">' +
+              settings.entityreferenceViewWidgetEmptyMessage + '</td> </tr>');
+            }
           }
         });
-      }
+      });
 
       var checkboxes = '#modal-content input.entity-reference-view-widget-select';
       var selectAllSelector = '#entityreference-view-widget-select-all';
       $(selectAllSelector).unbind('click').data('unselect', 0).click(function() {
-        // Use the proper JQeury methd depending on the JQuery version.
+        // Use the proper jQuery method depending on the jQuery version.
         var version = $.fn.jquery.split('.');
         var use_prop = (version[0] > 1 || version[1] > 5);
         if ($(this).data('unselect')) {

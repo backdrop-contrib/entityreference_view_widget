@@ -576,9 +576,11 @@ function theme_entityreference_view_widget_widget($variables) {
     );
   }
 
+  $empty_message = t('No items have been added yet. Click "Add items" to launch the widget.');
+  drupal_add_js(array('entityreferenceViewWidgetEmptyMessage' => $empty_message), 'setting');
   if (empty($rows)) {
     $rows[][] = array(
-      'data' => t('No items have been added yet. Click "Add items" to launch the widget.'),
+      'data' => $empty_message,
       'colspan' => '3',
     );
   }
