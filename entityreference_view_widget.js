@@ -48,6 +48,20 @@
             $(this).data('unselect', 1).text(Drupal.t('Unselect all'));
           }
         });
+
+        // Select checkboxes when clicking on table rows.
+        var $table_rows = $(checkboxes).parents('table').find('tbody tr');
+        if ($table_rows.length > 0) {
+          $table_rows.click(function (e) {
+            var $current_checkbox = $('input.entity-reference-view-widget-select', $(this));
+            if ($current_checkbox.attr('checked')) {
+              $current_checkbox.removeAttr('checked');
+            }
+            else {
+              $current_checkbox.attr('checked', 'checked');
+            }
+          });
+        }
       });
 
       if (settings.entityReferenceViewWidget) {
