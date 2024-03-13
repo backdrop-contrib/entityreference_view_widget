@@ -1,0 +1,118 @@
+{
+  "_config_name": "views.view.entityreference_view_widget_sample",
+  "name": "entityreference_view_widget_sample",
+  "description": "This is a basic view ready to use with entity reference view widget. Feel free to edit it or create another.",
+  "tag": "default",
+  "disabled": false,
+  "base_table": "node",
+  "human_name": "Entiy Reference View Widget Sample View",
+  "module": "entityreference_view_widget",
+  "display": {
+    "default": {
+      "display_title": "Master",
+      "display_plugin": "default",
+      "display_options": {
+        "query": {
+          "type": "views_query",
+          "options": []
+        },
+        "use_more_always": false,
+        "access": {
+          "type": "perm"
+        },
+        "cache": {
+          "type": "none"
+        },
+        "exposed_form": {
+          "type": "basic"
+        },
+        "pager": {
+          "type": "full"
+        },
+        "style_plugin": "table",
+        "fields": {
+          "entityreference_view_widget": {
+            "id": "entityreference_view_widget",
+            "table": "node",
+            "field": "entityreference_view_widget",
+            "label": "",
+            "element_label_colon": false,
+            "ervw": {
+              "force_single": 0
+            }
+          },
+          "title": {
+            "id": "title",
+            "table": "node",
+            "field": "title",
+            "label": "",
+            "alter": {
+              "word_boundary": false,
+              "ellipsis": false
+            }
+          }
+        },
+        "sorts": {
+          "created": {
+            "id": "created",
+            "table": "node",
+            "field": "created",
+            "order": "DESC"
+          }
+        },
+        "filters": {
+          "status": {
+            "id": "status",
+            "table": "node",
+            "field": "status",
+            "value": 1,
+            "group": 1,
+            "expose": {
+              "operator": false
+            }
+          }
+        }
+      }
+    },
+    "entityreference_view_widget_1": {
+      "display_title": "Entity Reference View Widget",
+      "display_plugin": "entityreference_view_widget",
+      "display_options": {
+        "query": {
+          "type": "views_query",
+          "options": []
+        },
+        "defaults": {
+          "title": false,
+          "use_ajax": false,
+          "style_plugin": false,
+          "style_options": false,
+          "row_plugin": false,
+          "row_options": false
+        },
+        "style_plugin": "table",
+        "style_options": {
+          "columns": {
+            "entityreference_view_widget": "entityreference_view_widget",
+            "title": "title"
+          },
+          "default": "-1",
+          "info": {
+            "entityreference_view_widget": {
+              "align": "",
+              "separator": "",
+              "empty_column": 0
+            },
+            "title": {
+              "sortable": 0,
+              "default_sort_order": "asc",
+              "align": "",
+              "separator": "",
+              "empty_column": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

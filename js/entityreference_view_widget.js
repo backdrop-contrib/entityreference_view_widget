@@ -4,7 +4,7 @@
  */
 
 (function($) {
-  Drupal.behaviors.entityreferenceViewWidget = {
+  Backdrop.behaviors.entityreferenceViewWidget = {
     attach: function(context, settings) {
       var tableRowSelector = 'tr.entityreference-view-widget-table-row';
       $(tableRowSelector).once('processed', function () {
@@ -41,11 +41,11 @@
           e.preventDefault();
           if ($(this).data('unselect')) {
             use_prop ? $(checkboxes).prop('checked', false) : $(checkboxes).removeAttr('checked');
-            $(this).data('unselect', 0).text(Drupal.t('Select all'));
+            $(this).data('unselect', 0).text(Backdrop.t('Select all'));
           }
           else {
             use_prop ? $(checkboxes).prop('checked',true) : $(checkboxes).attr('checked', 'checked');
-            $(this).data('unselect', 1).text(Drupal.t('Unselect all'));
+            $(this).data('unselect', 1).text(Backdrop.t('Unselect all'));
           }
         });
 
@@ -90,12 +90,12 @@
 
   // Create a new ajax command, ervw_draggable that is called to make the rows
   // of the widget draggable.
-  Drupal.ajax.prototype.commands.ervw_draggable = function(ajax, response, status) {
+  Backdrop.ajax.prototype.commands.ervw_draggable = function(ajax, response, status) {
     $('#' + response.selector + ' tr').each(function(){
       var el = $(this);
-      Drupal.tableDrag[response.selector].makeDraggable(el.get(0));
+      Backdrop.tableDrag[response.selector].makeDraggable(el.get(0));
       el.find('td:last').addClass('tabledrag-hide');
-      if ($.cookie('Drupal.tableDrag.showWeight') == 1) {
+      if ($.cookie('Backdrop.tableDrag.showWeight') == 1) {
         el.find('.tabledrag-handle').hide();
       }
       else {

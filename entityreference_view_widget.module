@@ -24,7 +24,7 @@ function entityreference_view_widget_theme() {
 function entityreference_view_widget_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'entityreference_view_widget') . '/views',
+    'path' => backdrop_get_path('module', 'entityreference_view_widget') . '/views',
   );
 }
 
@@ -143,7 +143,7 @@ function entityreference_view_widget_field_widget_settings_form($field, $instanc
  * Implements hook_field_widget_form().
  */
 function entityreference_view_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  $ids = &drupal_static(__FUNCTION__);
+  $ids = &backdrop_static(__FUNCTION__);
   _entityreference_view_widget_add_resources($form);
   $element['#theme'] = 'entityreference_view_widget_widget';
   // Build the path of the element.
@@ -165,11 +165,11 @@ function entityreference_view_widget_field_widget_form(&$form, &$form_state, $fi
   $index = implode('-', $index_parts);
 
   // Some modules, like entity_translation for example, might render the element
-  // more than once. This can cause ervw to break when drupal_html_id() creates
+  // more than once. This can cause ervw to break when backdrop_html_id() creates
   // a unique ID on subsequent passes that does not match the original element.
   // Cache and use the first index value that is created.
   if (!isset($ids[$index])) {
-    $ids[$index] = drupal_html_id($index);
+    $ids[$index] = backdrop_html_id($index);
   }
 
   $settings = array(
@@ -245,7 +245,7 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
         $arguments[0] = implode('+', $form_state['ervw_ids'][$settings['index']]);
       }
       // Allow the alteration of Views arguments.
-      drupal_alter('entityreference_view_widget_views_arguments', $arguments, $form_state, $view);
+      backdrop_alter('entityreference_view_widget_views_arguments', $arguments, $form_state, $view);
 
       if (!empty($arguments)) {
         $view->set_arguments($arguments);
@@ -270,8 +270,8 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
           'serialized' => json_encode($settings),
         ),
       );
-      drupal_add_js($settings, 'setting');
-      $commands[] = ctools_modal_command_display($modal_title, $view->preview());
+      backdrop_add_js($settings, 'setting');
+      $commands[] = ajax_command_open_modal_dialog($modal_title, $view->preview());
     }
   }
   return array(
@@ -284,18 +284,16 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
  * Attach the required js and libraries for the widget.
  */
 function _entityreference_view_widget_add_resources(&$form) {
-  ctools_include('ajax');
-  ctools_include('modal');
-  ctools_include('plugins');
-  ctools_modal_add_js();
-  $module_path = drupal_get_path('module', 'entityreference_view_widget');
-  $form['#attached']['js'][] = $module_path . '/entityreference_view_widget.js';
-  $form['#attached']['css'][] = $module_path . '/entityreference_view_widget.css';
+
+  backdrop_add_library('system', 'backdrop.ajax');
+  $module_path = backdrop_get_path('module', 'entityreference_view_widget');
+  $form['#attached']['js'][] = $module_path . '/js/entityreference_view_widget.js';
+  $form['#attached']['css'][] = $module_path . '/css/entityreference_view_widget.css';
 
   // Make sure required views javascript is loaded so that ajax
   // events on exposed filters and pagers works correctly.
-  $form['#attached']['js'][] = drupal_get_path('module', 'views') . '/js/base.js';
-  $form['#attached']['js'][] = drupal_get_path('module', 'views') . '/js/ajax_view.js';
+  $form['#attached']['js'][] = backdrop_get_path('module', 'views') . '/js/base.js';
+  $form['#attached']['js'][] = backdrop_get_path('module', 'views') . '/js/ajax_view.js';
 }
 
 /**
@@ -314,7 +312,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
     return;
   }
 
-  $form_existing = drupal_array_get_nested_value($form, $form_parents);
+  $form_existing = backdrop_array_get_nested_value($form, $form_parents);
 
   // Modules like entityreference_prepopulate might hide or disable the field,
   // in that case we shouldn't check for user input.
@@ -341,7 +339,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
     }
   }
 
-  $input = drupal_array_get_nested_value($form_state['input'], $form_state_parents);
+  $input = backdrop_array_get_nested_value($form_state['input'], $form_state_parents);
   $settings = $element['#ervw_settings'];
 
   if (!empty($input)) {
@@ -356,7 +354,7 @@ function entityreference_view_widget_validate($element, &$form_state, $form) {
     $rows = entityreference_view_widget_rows($entity_ids, $settings);
 
     // Put back the rows in the form.
-    drupal_array_set_nested_value($form, $form_parents, $form_existing + $rows);
+    backdrop_array_set_nested_value($form, $form_parents, $form_existing + $rows);
   }
   form_set_value($element, $input, $form_state);
 
@@ -444,8 +442,8 @@ function entityreference_view_widget_ajax($form, $form_state) {
       }
       // Automatically close the modal if necessary.
       if (!empty($widget_settings['close_modal'])) {
-        ctools_include('modal');
-        $commands[] = ctools_modal_command_dismiss();
+        backdrop_add_library('system', 'backdrop.ajax');
+        $commands[] = ajax_command_close_modal_dialog();
       }
     }
   }
@@ -466,15 +464,15 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
     return $rows;
   }
   $max_delta = count($entities);
-  $weight_options = drupal_map_assoc(range(-$max_delta, $max_delta));
+  $weight_options = backdrop_map_assoc(range(-$max_delta, $max_delta));
   $delta = 0;
 
   foreach ($entities as $entity_id => $entity) {
-    $frontend_id = drupal_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
+    $frontend_id = backdrop_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
 
     if (!empty($settings['rendered_entity'])) {
       $entity_view = entity_view($settings['target_type'], array($entity), $settings['view_mode']);
-      $suffix = drupal_render($entity_view);
+      $suffix = backdrop_render($entity_view);
     }
     else {
       $label = entity_label($settings['target_type'], $entities[$entity_id]);
@@ -511,14 +509,14 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
         '#name' => $name . '[_weight]',
         '#attributes' => array(
           'id' => $frontend_id . '-weight',
-          'class' => array(drupal_html_class($settings['element'] . '-delta-order')),
+          'class' => array(backdrop_html_class($settings['element'] . '-delta-order')),
         ),
       ),
     );
     $delta++;
   }
   // Allow other modules to alter the rows.
-  drupal_alter('entityreference_view_widget_rows', $rows, $entities, $settings);
+  backdrop_alter('entityreference_view_widget_rows', $rows, $entities, $settings);
   return $rows;
 }
 
@@ -528,7 +526,7 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
 function theme_entityreference_view_widget_widget($variables) {
   $widget = $variables['widget'];
   $settings = $widget['add_more']['#ervw_settings'];
-  $order_class = drupal_html_class($settings['element'] . '-delta-order');
+  $order_class = backdrop_html_class($settings['element'] . '-delta-order');
   $required = !empty($settings['instance']['required']) ? theme('form_required_marker', $variables) : '';
 
   $header = array(
@@ -562,10 +560,10 @@ function theme_entityreference_view_widget_widget($variables) {
   // Add the items as table rows.
   foreach ($items as $item) {
     $item['_weight']['#attributes']['class'] = array($order_class);
-    $delta_element = drupal_render($item['_weight']);
+    $delta_element = backdrop_render($item['_weight']);
     $cells = array(
       array('data' => '', 'class' => array('field-multiple-drag')),
-      drupal_render($item),
+      backdrop_render($item),
     );
     if ($settings['field']['cardinality'] !== '1') {
       $cells[] = array('data' => $delta_element, 'class' => array('delta-order'));
@@ -577,7 +575,7 @@ function theme_entityreference_view_widget_widget($variables) {
   }
 
   $empty_message = t('No items have been added yet. Click "Add items" to launch the widget.');
-  drupal_add_js(array('entityreferenceViewWidgetEmptyMessage' => $empty_message), 'setting');
+  backdrop_add_js(array('entityreferenceViewWidgetEmptyMessage' => $empty_message), 'setting');
   if (empty($rows)) {
     $rows[][] = array(
       'data' => $empty_message,
@@ -603,11 +601,11 @@ function theme_entityreference_view_widget_widget($variables) {
     ),
   ));
   $output .= $widget['#description'] ? '<div class="description">' . $widget['#description'] . '</div>' : '';
-  $output .= '<div class="clearfix">' . drupal_render($add_more_button) . '</div>';
+  $output .= '<div class="clearfix">' . backdrop_render($add_more_button) . '</div>';
   $output .= '</div>';
 
   if ($settings['field']['cardinality'] !== '1') {
-    drupal_add_tabledrag($settings['table_id'], 'order', 'sibling', $order_class);
+    backdrop_add_tabledrag($settings['table_id'], 'order', 'sibling', $order_class);
   }
 
   return $output;
@@ -633,4 +631,14 @@ function theme_entityreference_view_widget_rows($variables) {
   }
 
   return implode("\n", $output);
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function entityreference_view_widget_autoload_info() {
+  return array(
+    'entityreference_view_widget_plugin_display' => 'views/entityreference_view_widget_plugin_display.inc',
+    'entityreference_view_widget_handler_field_checkbox' => 'views/entityreference_view_widget_handler_field_checkbox.inc',
+  );
 }
