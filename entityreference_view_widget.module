@@ -233,9 +233,6 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     $target_view = explode('|', $settings['view']);
     $view = views_get_view($target_view[0]);
     if (!empty($view)) {
-      $view->set_display($target_view[1]);
-      $view->dom_id = $view->name . '-' . $target_view[1];
-      $view->display_handler->set_option('use_ajax', TRUE);
 
       _entityreference_view_widget_add_resources($form);
       $arguments = array();
@@ -270,8 +267,8 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
           'serialized' => json_encode($settings),
         ),
       );
-      backdrop_add_js($settings, 'setting');
-      $commands[] = ajax_command_open_dialog('#entityreference-view-widget-modal', $modal_title, $view->preview());
+      $commands[] = ajax_command_settings($settings, TRUE);
+      $commands[] = ajax_command_open_dialog('#entityreference-view-widget-modal', $modal_title, $view->preview($target_view[1], $arguments));
     }
   }
   return array(
