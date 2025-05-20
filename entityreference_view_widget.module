@@ -271,7 +271,11 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
         ),
       );
       backdrop_add_js($settings, 'setting');
-      $commands[] = ajax_command_open_dialog('#entityreference-view-widget-modal', $modal_title, $view->preview(), array('modal' => true));
+      $options = array(
+        'dialogClass' => 'ervw--modal',
+        'modal' => TRUE,
+      );
+      $commands[] = ajax_command_open_dialog('#entityreference-view-widget-modal', $modal_title, $view->preview(), $options);
     }
   }
   return array(
