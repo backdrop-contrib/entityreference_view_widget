@@ -81,8 +81,8 @@
 
         // We need to pass the settings via an hidden field because Views doesn't
         // allow us to pass data between ajax requests.
-        if (settings.entityReferenceViewWidget.serialized) {
-          $('input[name="ervw_settings"]').val(settings.entityReferenceViewWidget.serialized);
+        if (settings.entityReferenceViewWidget.json) {
+          $('input[name="ervw_settings"]').val(settings.entityReferenceViewWidget.json);
         }
       }
     }

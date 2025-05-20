@@ -244,13 +244,8 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       // Allow the alteration of Views arguments.
       backdrop_alter('entityreference_view_widget_views_arguments', $arguments, $form_state, $view);
 
-      if (!empty($arguments)) {
-        $view->set_arguments($arguments);
-      }
-
       $settings['cardinality'] = $settings['field']['cardinality'];
-      // Unset some values in order to keep a relatively small serialized
-      // string.
+      // Unset some values in order to keep a relatively small JSON string.
       unset($settings['field']);
       unset($settings['instance']);
 
@@ -264,7 +259,7 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       $settings = array(
         'entityReferenceViewWidget' => array(
           'settings' => $settings,
-          'serialized' => json_encode($settings),
+          'json' => json_encode($settings),
         ),
       );
       $commands[] = ajax_command_settings($settings, TRUE);
@@ -440,7 +435,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
       // Automatically close the modal if necessary.
       if (!empty($widget_settings['close_modal'])) {
         backdrop_add_library('system', 'backdrop.ajax');
-        $commands[] = ajax_command_close_dialog('#entityreference-view-widget-modal');
+        $commands[] = ajax_command_close_modal_dialog();
       }
     }
   }
