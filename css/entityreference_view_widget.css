@@ -7,3 +7,13 @@ table.error {
 #modal-content .views-table tr {
   cursor: pointer;
 }
+
+.ervw--modal {
+  max-width: 90%;
+  margin-inline: 5%;
+
+  @media (min-width: 62em) {
+    max-width: max(80%, 960px);
+    margin-inline: max(10%, 30px);
+  }
+}
