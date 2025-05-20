@@ -8,7 +8,7 @@ table.error {
   cursor: pointer;
 }
 
-.ervw--modal {
+#entityreference-view-widget-modal {
   max-width: 90%;
   margin-inline: 5%;
 
