@@ -271,11 +271,7 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
         ),
       );
       backdrop_add_js($settings, 'setting');
-      $options = array(
-        'dialogClass' => 'ervw--modal',
-        'modal' => TRUE,
-      );
-      $commands[] = ajax_command_open_dialog('#entityreference-view-widget-modal', $modal_title, $view->preview(), $options);
+      $commands[] = ajax_command_open_modal_dialog($modal_title, $view->preview());
     }
   }
   return array(
@@ -447,7 +443,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
       // Automatically close the modal if necessary.
       if (!empty($widget_settings['close_modal'])) {
         backdrop_add_library('system', 'backdrop.ajax');
-        $commands[] = ajax_command_close_dialog('#entityreference-view-widget-modal');
+        $commands[] = ajax_command_close_modal_dialog();
       }
     }
   }
@@ -475,7 +471,7 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
     $frontend_id = backdrop_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
 
     if (!empty($settings['rendered_entity'])) {
-      $entity_view = entity_view($settings['target_type'], array($entity), $settings['view_mode']);
+      $entity_view = entity_view($entity, $settings['view_mode']);
       $suffix = backdrop_render($entity_view);
     }
     else {
