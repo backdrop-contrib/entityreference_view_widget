@@ -475,7 +475,7 @@ function entityreference_view_widget_rows($entity_ids, $settings) {
     $frontend_id = backdrop_html_id('edit-' . $settings['element'] . '-' . $settings['langcode'] . '-' . $delta);
 
     if (!empty($settings['rendered_entity'])) {
-      $entity_view = entity_view($settings['target_type'], array($entity), $settings['view_mode']);
+      $entity_view = entity_view($entity, $settings['view_mode']);
       $suffix = backdrop_render($entity_view);
     }
     else {
