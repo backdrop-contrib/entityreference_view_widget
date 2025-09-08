@@ -71,7 +71,8 @@
               "operator": false
             }
           }
-        }
+        },
+        "use_ajax": true
       }
     },
     "entityreference_view_widget_1": {
@@ -84,7 +85,7 @@
         },
         "defaults": {
           "title": false,
-          "use_ajax": false,
+          "use_ajax": true,
           "style_plugin": false,
           "style_options": false,
           "row_plugin": false,

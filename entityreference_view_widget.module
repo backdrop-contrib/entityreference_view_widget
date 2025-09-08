@@ -233,9 +233,6 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
     $target_view = explode('|', $settings['view']);
     $view = views_get_view($target_view[0]);
     if (!empty($view)) {
-      $view->set_display($target_view[1]);
-      $view->dom_id = $view->name . '-' . $target_view[1];
-      $view->display_handler->set_option('use_ajax', TRUE);
 
       _entityreference_view_widget_add_resources($form);
       $arguments = array();
@@ -247,13 +244,8 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       // Allow the alteration of Views arguments.
       backdrop_alter('entityreference_view_widget_views_arguments', $arguments, $form_state, $view);
 
-      if (!empty($arguments)) {
-        $view->set_arguments($arguments);
-      }
-
       $settings['cardinality'] = $settings['field']['cardinality'];
-      // Unset some values in order to keep a relatively small serialized
-      // string.
+      // Unset some values in order to keep a relatively small JSON string.
       unset($settings['field']);
       unset($settings['instance']);
 
@@ -267,10 +259,10 @@ function entityreference_view_widget_add_more_ajax($form, $form_state) {
       $settings = array(
         'entityReferenceViewWidget' => array(
           'settings' => $settings,
-          'serialized' => json_encode($settings),
+          'json' => json_encode($settings),
         ),
       );
-      backdrop_add_js($settings, 'setting');
+      $commands[] = ajax_command_settings($settings, TRUE);
       $options = array(
         'dialogClass' => 'ervw--modal',
         'modal' => TRUE,
@@ -447,7 +439,7 @@ function entityreference_view_widget_ajax($form, $form_state) {
       // Automatically close the modal if necessary.
       if (!empty($widget_settings['close_modal'])) {
         backdrop_add_library('system', 'backdrop.ajax');
-        $commands[] = ajax_command_close_dialog('#entityreference-view-widget-modal');
+        $commands[] = ajax_command_close_modal_dialog();
       }
     }
   }
